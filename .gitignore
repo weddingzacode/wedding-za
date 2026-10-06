@@ -28,6 +28,8 @@ tmp/
 # Dependencies if added later
 /vendor/
 /node_modules/
+/test-results/
+/playwright-report/
 
 # Build / archive outputs
 *.zip

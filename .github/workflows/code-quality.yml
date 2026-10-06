@@ -22,7 +22,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: pdo_mysql, fileinfo
+          extensions: pdo_mysql, fileinfo, mbstring, curl
 
       - name: Check PHP syntax
         shell: bash
@@ -31,6 +31,9 @@ jobs:
           while IFS= read -r -d '' file; do
             php -l "$file"
           done < <(find . -type f -name "*.php" -print0)
+
+      - name: Check launch security regressions
+        run: php scripts/qa-launch-security.php
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -72,7 +75,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: pdo_mysql, fileinfo
+          extensions: pdo_mysql, fileinfo, mbstring, curl
 
       - name: Install MySQL client
         run: |
@@ -157,7 +160,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: pdo_mysql, fileinfo
+          extensions: pdo_mysql, fileinfo, mbstring, curl
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

@@ -11,6 +11,12 @@ if (!in_array($role, ['host', 'vendor', 'venue'], true)) {
 
 $error = '';
 $databaseReady = wz_database_ready();
+$demoAllowed = wz_demo_login_allowed();
+
+if (!$databaseReady && !$demoAllowed) {
+    http_response_code(503);
+    $error = 'Sign-in is temporarily unavailable. Please try again later.';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!wz_csrf_valid($_POST['csrf'] ?? null)) {
@@ -37,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $error = (string)($result['message'] ?? 'Unable to sign in.');
-    } else {
+    } elseif ($demoAllowed) {
         $name = trim((string)($_POST['name'] ?? ''));
         $email = trim((string)($_POST['email'] ?? ''));
 
@@ -124,10 +130,9 @@ require __DIR__ . '/includes/header.php';
                     <p class="auth-v2-note">
                         Sign in with your Wedding Za account.
                     </p>
-                <?php else: ?>
+                <?php elseif ($demoAllowed): ?>
                     <p class="auth-v2-note">
-                        MySQL is not configured on this installation yet,
-                        so this local build is using session-only demo access.
+                        This local preview uses temporary demo access.
                     </p>
                 <?php endif; ?>
 
@@ -150,7 +155,7 @@ require __DIR__ . '/includes/header.php';
                         value="<?= h($role) ?>"
                     >
 
-                    <?php if (!$databaseReady): ?>
+                    <?php if ($demoAllowed): ?>
                         <div class="field">
                             <label for="loginName">
                                 Name
@@ -179,7 +184,7 @@ require __DIR__ . '/includes/header.php';
                         >
                     </div>
 
-                    <?php if ($databaseReady): ?>
+                    <?php if (!$demoAllowed): ?>
                         <div class="field">
                             <label for="loginPassword">
                                 Password
@@ -198,6 +203,7 @@ require __DIR__ . '/includes/header.php';
                     <button
                         class="pill-btn wine wide"
                         type="submit"
+                        <?= !$databaseReady && !$demoAllowed ? 'disabled' : '' ?>
                     >
                         Enter workspace ↗
                     </button>

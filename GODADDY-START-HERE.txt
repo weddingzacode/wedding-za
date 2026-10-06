@@ -1,0 +1,51 @@
+Weddingza — GoDaddy upload instructions
+Updated: 6 October 2026
+
+Status: code reviewed and tested locally. Final hosting verification and
+client-approved business content are required before public launch.
+
+1. Keep the complete old Vercel/GoDaddy files, database and media backup.
+
+2. Confirm the Weddingza domain's document root in your hosting account.
+   Upload the CONTENTS of wedding-za into that root, so index.php is directly
+   inside it. Include the .htaccess files. Avoid a second wedding-za subfolder.
+
+3. Select PHP 8.3 where available. Enable PDO MySQL, fileinfo, mbstring and cURL.
+
+4. Create a separate new MySQL database and database user. Import
+   database/schema.sql ONCE using phpMyAdmin. This includes all migrations.
+
+5. Copy config.example.php to config.local.php. Fill the final HTTPS URL,
+   database settings, random health token, business contact details, social
+   image, and your own payment-provider settings. Leave allow_demo_login false.
+   Never share this private configuration or add it to GitHub.
+
+6. Create the admin account from cPanel Terminal / SSH:
+   php scripts/create-admin.php "Your Admin Name" "YOUR_EMAIL" "YOUR_STRONG_PASSWORD"
+   Use your own details, then sign in at /admin/login.php.
+
+7. Ensure PHP can write to uploads/media and storage. Check that private
+   configuration, database files and storage files return HTTP 403 or 404.
+
+8. In Terminal run:
+   php scripts/go-live-check.php
+   Fix every BLOCKER. Its success message confirms configuration checks only.
+   Privacy, terms and cancellation pages still contain draft policy text.
+   Replace it with client-approved policies before accepting public payments.
+   Review sample listings, editorial images and business contact information.
+
+9. Before switching the main domain, test the new installation: customer,
+   venue, vendor and admin login; signup; enquiries; quotes; bookings; uploads;
+   member card; mobile menu; animations; valid HTTPS and HTTPS redirects.
+
+10. Configure the Razorpay webhook at:
+    https://YOUR-DOMAIN/api/razorpay-webhook.php
+    Verify Test Mode payment success, cancellation and webhook delivery first.
+    Then set Live Mode keys and complete a controlled real-payment check.
+    Email/push requires your own configured delivery provider if enabled.
+
+11. Switch the domain to this hosting account only after the checks pass.
+    Re-test login, enquiry submission and payments at the final domain.
+
+Full instructions: docs/GO-LIVE.md
+No hosting credentials, live payment secrets or customer data are included.

@@ -52,6 +52,10 @@ function wz_config(): array
         ],
         'operations' => [
             'health_token' => getenv('WZ_HEALTH_TOKEN') ?: '',
+            'allow_demo_login' => filter_var(
+                getenv('WZ_ALLOW_DEMO_LOGIN') ?: '0',
+                FILTER_VALIDATE_BOOLEAN
+            ),
         ],
     ];
 

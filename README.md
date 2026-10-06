@@ -87,7 +87,7 @@ Without MySQL:
 
 - Shortlist is stored in the browser.
 - Planner data is stored in the browser.
-- Account access runs in local session mode.
+- Account login is unavailable unless local demo access is explicitly enabled.
 - Lead forms fall back to `storage/leads.csv`.
 
 With MySQL configured:
@@ -110,6 +110,11 @@ Setup:
 See `database/README.md` for the short setup guide.
 
 Never commit `config.local.php`.
+
+For a local preview only, set `operations.allow_demo_login` to `true` (or
+`WZ_ALLOW_DEMO_LOGIN=1`). Demo access also requires a loopback hostname and
+client address, with no database configured. A failed production database
+connection never enables demo sign-in. Keep this option disabled on GoDaddy.
 
 ## Account routes
 
@@ -196,7 +201,7 @@ Workflow:
 
 ## Motion dependencies
 
-Advanced motion uses CDN-hosted:
+Advanced motion uses locally bundled libraries (including license notices):
 
 - GSAP 3.15.0
 - ScrollTrigger 3.15.0
@@ -227,7 +232,6 @@ The design still uses remote:
 
 - Google Fonts
 - Unsplash-hosted editorial imagery
-- GSAP / ScrollTrigger / Lenis CDNs
 
 For a completely self-hosted production package, replace remote editorial imagery with the client's licensed media library and choose a compliant font delivery strategy.
 

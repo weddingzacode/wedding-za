@@ -43,5 +43,7 @@ return [
 
     'operations' => [
         'health_token' => '',
+        // Enable only for a local preview without a configured database.
+        'allow_demo_login' => false,
     ],
 ];
