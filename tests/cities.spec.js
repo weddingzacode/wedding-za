@@ -11,7 +11,12 @@ test('homepage has compact featured cities and links to the full list', async ({
   const columns = await section.locator('.vision-city-rail').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
   expect(columns).toBe(testInfo.project.name.startsWith('mobile') ? 2 : 4);
   expect(await section.evaluate(el => el.scrollWidth <= window.innerWidth)).toBeTruthy();
-  await section.screenshot({ path: testInfo.outputPath('featured-cities.png'), animations: 'disabled' });
+  await section.screenshot({
+    path: testInfo.outputPath('featured-cities.png'),
+    animations: 'disabled',
+    // Off-screen fixed layers otherwise appear inside stitched screenshots.
+    style: '#pageWipe:not(.active), #siteHeader { visibility: hidden !important; }',
+  });
   await section.getByLabel('Where are you celebrating?').fill('Mumbai');
   await section.getByRole('button', { name: 'Find a city' }).click();
   await expect(page.locator('.city-directory-card')).toHaveCount(1);
@@ -28,7 +33,11 @@ test('city directory searches, filters, clears and opens the selected guide', as
   expect(await cards.count()).toBe(8);
   await expect(page.locator('.city-result-count')).toContainText('Showing 1–8 of 8 cities');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy();
-  await page.screenshot({ path: testInfo.outputPath('city-directory.png'), fullPage: true });
+  await page.screenshot({
+    path: testInfo.outputPath('city-directory.png'),
+    fullPage: true,
+    style: '#pageWipe:not(.active) { visibility: hidden !important; }',
+  });
   await page.getByLabel('Search by city name').fill('dElHi');
   await page.getByRole('button', { name: 'Find a city' }).click();
   await expect(cards).toHaveCount(1);
