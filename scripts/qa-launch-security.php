@@ -14,7 +14,7 @@ mkdir($fixture . '/includes', 0700, true);
 mkdir($fixture . '/assets/data', 0700, true);
 mkdir($fixture . '/scripts', 0700, true);
 
-foreach (['auth.php', 'database.php', 'bootstrap.php'] as $file) {
+foreach (['auth.php', 'database.php', 'bootstrap.php', 'policies.php'] as $file) {
     copy($root . '/includes/' . $file, $fixture . '/includes/' . $file);
 }
 copy($root . '/scripts/go-live-check.php', $fixture . '/scripts/go-live-check.php');
@@ -98,7 +98,7 @@ try {
 <?php return ['app_url' => 'https://your-domain.com', 'operations' => ['allow_demo_login' => true]];
 PHP);
     $result = wz_qa_child($fixture . '/scripts/go-live-check.php', false);
-    foreach (['cURL extension', 'Production app URL', 'Demo account access', 'Published business policies'] as $label) {
+    foreach (['cURL extension', 'Production app URL', 'Demo account access', 'Published business policies', 'Business and grievance details'] as $label) {
         $passed = $result['code'] === 1 && str_contains($result['output'], '[BLOCK]  ' . $label);
         echo ($passed ? 'PASS' : 'FAIL') . ' — checker rejects ' . $label . PHP_EOL;
         $failed = $failed || !$passed;

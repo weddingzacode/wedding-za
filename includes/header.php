@@ -208,6 +208,10 @@ if (wz_is_logged_in()) {
         rel="stylesheet"
         href="assets/css/final-polish.css?v=1.0.0"
     >
+
+    <?php if (in_array($pageKey, ['privacy', 'terms', 'cancellation'], true)): ?>
+        <link rel="stylesheet" href="assets/css/policies.css?v=2026-10-07">
+    <?php endif; ?>
 </head>
 
 <body

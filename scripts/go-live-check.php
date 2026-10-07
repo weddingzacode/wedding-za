@@ -530,6 +530,20 @@ wz_live_add(
         : 'Replace draft policy copy with client-approved content in: ' . implode(', ', $draftPolicyPages) . '.'
 );
 
+$missingBusinessDetails = ['policy business-details helper'];
+if (is_file($root . '/includes/policies.php')) {
+    require_once $root . '/includes/policies.php';
+    $missingBusinessDetails = wz_policy_missing_details(wz_policy_details());
+}
+wz_live_add(
+    $results,
+    !$missingBusinessDetails ? WZ_LIVE_PASS : WZ_LIVE_BLOCKER,
+    'Business and grievance details',
+    !$missingBusinessDetails
+        ? 'Operator, address, support and named grievance contact are configured. Verify their accuracy and monitor the contact channels.'
+        : 'Add actual public business details: ' . implode(', ', $missingBusinessDetails) . '.'
+);
+
 $blockers = array_values(
     array_filter(
         $results,

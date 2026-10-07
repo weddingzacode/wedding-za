@@ -6,6 +6,7 @@ storage/*.csv
 
 # Environment / secrets
 config.local.php
+includes/policy-details.local.php
 .env
 .env.*
 !.env.example

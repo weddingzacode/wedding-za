@@ -1,0 +1,135 @@
+body:is([data-page="privacy"], [data-page="terms"], [data-page="cancellation"]) .vision-page-intro {
+  min-height: auto;
+  padding: 150px 0 60px;
+}
+
+body:is([data-page="privacy"], [data-page="terms"], [data-page="cancellation"]) .page-intro-inner {
+  display: block;
+}
+
+body:is([data-page="privacy"], [data-page="terms"], [data-page="cancellation"]) .vision-page-intro h1 {
+  font-size: clamp(42px, 7vw, 88px);
+  line-height: 1.08;
+  margin: 24px 0;
+  overflow-wrap: anywhere;
+}
+
+body:is([data-page="privacy"], [data-page="terms"], [data-page="cancellation"]) .vision-page-intro p {
+  max-width: 700px;
+}
+
+.policy-copy {
+  max-width: 920px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.policy-copy p,
+.policy-copy li,
+.policy-copy dd {
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.policy-copy h2 {
+  font-size: clamp(29px, 4vw, 38px);
+  line-height: 1.2;
+  margin: 44px 0 16px;
+  scroll-margin-top: 120px;
+}
+
+.policy-copy ul,
+.policy-copy ol {
+  padding-left: 24px;
+  margin: 16px 0 24px;
+}
+
+.policy-copy li + li {
+  margin-top: 12px;
+}
+
+.policy-copy a {
+  color: var(--wine, #7b1e3f);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.policy-copy a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+
+.policy-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line, #ded4cb);
+}
+
+.policy-meta p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.policy-meta nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 14px;
+}
+
+.policy-meta [aria-current="page"] {
+  font-weight: 800;
+}
+
+.policy-summary,
+.policy-contact {
+  background: rgba(255, 255, 255, .65);
+  border: 1px solid var(--line, #ded4cb);
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 32px);
+}
+
+.policy-summary p {
+  margin: 0;
+}
+
+.policy-contact {
+  margin-top: 48px;
+}
+
+.policy-contact h2 {
+  margin-top: 0;
+}
+
+.policy-contact dl {
+  margin: 0;
+}
+
+.policy-contact dl > div {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.policy-contact dt {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.85;
+}
+
+.policy-contact dd {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .policy-contact dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}

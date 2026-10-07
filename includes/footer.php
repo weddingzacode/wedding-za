@@ -114,7 +114,7 @@
             </a>
 
             <a href="cancellation.php">
-                Cancellation
+                Cancellation &amp; refunds
             </a>
 
             <a href="careers.php">
