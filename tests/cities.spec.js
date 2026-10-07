@@ -21,6 +21,9 @@ test('homepage has compact featured cities and links to the full list', async ({
 test('city directory searches, filters, clears and opens the selected guide', async ({ page }, testInfo) => {
   await page.goto('/cities.php');
   await expect(page.locator('#preloader')).toBeHidden();
+  const headerBottom = await page.locator('#siteHeader').evaluate(el => el.getBoundingClientRect().bottom);
+  const backLinkTop = await page.locator('.city-back-link').evaluate(el => el.getBoundingClientRect().top);
+  expect(backLinkTop).toBeGreaterThanOrEqual(headerBottom);
   const cards = page.locator('.city-directory-card');
   expect(await cards.count()).toBe(8);
   await expect(page.locator('.city-result-count')).toContainText('Showing 1–8 of 8 cities');

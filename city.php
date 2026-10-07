@@ -17,13 +17,13 @@
         header('Location: cities.php?q='.rawurlencode(mb_substr($requestedCity,0,120,'UTF-8')));
         exit;
     }
-    $city=$cityDetails['name'];
+    $cityName=$cityDetails['name'];
     $hero=$cityDetails['image'];
-    $pageTitle=$city.' Event Vendors, Venues & Ideas';
-    $pageDescription='Discover venues, vendors, real celebrations and planning ideas for weddings, birthdays, corporate events and private functions in '.$city.'.';
+    $pageTitle=$cityName.' Event Vendors, Venues & Ideas';
+    $pageDescription='Discover venues, vendors, real celebrations and planning ideas for weddings, birthdays, corporate events and private functions in '.$cityName.'.';
     $pageKey='city';
-    $localVendors=array_values(array_filter(wz_public_vendors(),fn($v)=>strcasecmp(trim((string)($v['city']??'')),$city)===0));
-    $localCelebrations=array_values(array_filter(wz_data('weddings'),fn($w)=>($w['city']??'')===$city));
+    $localVendors=array_values(array_filter(wz_public_vendors(),fn($v)=>strcasecmp(trim((string)($v['city']??'')),$cityName)===0));
+    $localCelebrations=array_values(array_filter(wz_data('weddings'),fn($w)=>($w['city']??'')===$cityName));
     $events=wz_data('event_types');
     $cityNotes=[
     'Jaipur'=>['Heritage scale, destination hospitality and strong visual identity.','Palace logistics','Guest transfers','Heat-aware timings'],
@@ -32,7 +32,7 @@
     'Delhi NCR'=>['Huge vendor depth and venue variety make disciplined shortlisting especially valuable.','Travel time','Venue access','Production scale'],
     'Mumbai'=>['City events benefit from smart timing, compact guest flow and realistic logistics.','Traffic windows','Loading access','Indoor backup']
     ];
-    $note=$cityNotes[$city]??['A strong local plan makes every kind of event easier to execute.','Guest flow','Venue access','Local vendor fit'];
+    $note=$cityNotes[$cityName]??['A strong local plan makes every kind of event easier to execute.','Guest flow','Venue access','Local vendor fit'];
     require __DIR__.'/includes/header.php';
 ?>
 <link rel="stylesheet" href="assets/css/cities.css?v=2026-10-07">
@@ -47,10 +47,10 @@
         <div class="container landing-hero-content">
             <span class="eyebrow light">
             WEDDING ZA CITY EDIT /
-            <?= h(strtoupper($city)) ?>
+            <?= h(strtoupper($cityName)) ?>
             </span>
             <h1>
-            <?= h($city) ?>
+            <?= h($cityName) ?>
             <br>
             <em>
             for every occasion.
@@ -61,9 +61,9 @@
             </p>
             <div class="landing-hero-actions">
                 <a class="vision-secondary" href="cities.php">All cities ↗</a>
-                <a class="vision-primary" href="vendors.php?city=<?=urlencode($city)?>
+                <a class="vision-primary" href="vendors.php?city=<?=urlencode($cityName)?>
                 ">Browse
-                <?= h($city) ?>
+                <?= h($cityName) ?>
                 vendors
                 <span>
                 ↗
@@ -117,7 +117,7 @@
                 <br>
                 <em>
                 planning in
-                <?= h($city) ?>
+                <?= h($cityName) ?>
                 ?
                 </em>
                 </h2>
@@ -131,17 +131,17 @@
                 ?>
                     <a href="event.php?type=<?=urlencode($event['name'])?>
                     &city=
-                    <?= urlencode($city) ?>
+                    <?= urlencode($cityName) ?>
                     " class="landing-event-card">
                     <img src="<?=h($event['image'])?>
                     " alt="
                     <?= h($event['name']) ?>
                     in
-                    <?= h($city) ?>
+                    <?= h($cityName) ?>
                     " loading="lazy">
                     <div>
                         <span>
-                        <?= h($city) ?>
+                        <?= h($cityName) ?>
                         </span>
                         <h3>
                         <?= h($event['name']) ?>
@@ -168,7 +168,7 @@
                 </span>
                 <h2>
                 Plan
-                <?= h($city) ?>
+                <?= h($cityName) ?>
                 like
                 <br>
                 <em>
@@ -213,9 +213,9 @@
                     </em>
                     </h2>
                 </div>
-                <a class="text-link" href="vendors.php?city=<?=urlencode($city)?>
+                <a class="text-link" href="vendors.php?city=<?=urlencode($cityName)?>
                 ">All
-                <?= h($city) ?>
+                <?= h($cityName) ?>
                 vendors ↗
                 </a>
             </div>
@@ -225,8 +225,8 @@
                 </div>
             <?php else: ?>
                 <div class="city-no-vendors">
-                    <p>We don’t have a published vendor shortlist for <?= h($city) ?> yet. Tell us what you’re planning and we’ll help you explore the options.</p>
-                    <a class="text-link" href="contact.php">Ask about <?= h($city) ?> ↗</a>
+                    <p>We don’t have a published vendor shortlist for <?= h($cityName) ?> yet. Tell us what you’re planning and we’ll help you explore the options.</p>
+                    <a class="text-link" href="contact.php">Ask about <?= h($cityName) ?> ↗</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -243,7 +243,7 @@
                         </span>
                         <h2>
                         See
-                        <?= h($city) ?>
+                        <?= h($cityName) ?>
                         <br>
                         <em>
                         in motion.
@@ -283,7 +283,7 @@
             </div>
             <div class="city-link-row">
                 <?php
-                    foreach(array_slice(array_values(array_filter($allowed,fn($x)=>$x!==$city)),0,6) as $other):
+                    foreach(array_slice(array_values(array_filter($allowed,fn($x)=>$x!==$cityName)),0,6) as $other):
                 ?>
                     <a href="city.php?city=<?=rawurlencode($other)?>">
                     <?= h($other) ?>
