@@ -116,6 +116,9 @@ jobs:
           ];
           PHP
 
+      - name: Check application and database time zones
+        run: php scripts/qa-timezone.php
+
       - name: Run CRM integration QA
         run: |
           php scripts/qa-crm.php

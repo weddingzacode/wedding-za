@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+// Event dates and CRM schedules use Indian local time.
+date_default_timezone_set('Asia/Kolkata');
 const WZ_ROOT = __DIR__ . '/..';
 $raw = file_get_contents(WZ_ROOT . '/assets/data/site.json');
 $WZ = json_decode($raw ?: '{}', true) ?: [];
