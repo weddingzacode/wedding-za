@@ -1,24 +1,28 @@
 <?php
     require __DIR__.'/includes/bootstrap.php';
     require __DIR__.'/includes/components.php';
-    $city=(string)($_GET['city']??'Jaipur');
-    $allowed=wz_data('cities');
-    if(!in_array($city,$allowed,true)) $city='Jaipur';
-    $heroMap=[
-    'Jaipur'=>'https://images.unsplash.com/photo-1767158597961-bd58dccc16bd?auto=format&fit=crop&w=1900&q=92',
-    'Udaipur'=>'https://images.unsplash.com/photo-1770665567877-72ee8a7c9051?auto=format&fit=crop&w=1900&q=92',
-    'Goa'=>'https://images.unsplash.com/photo-1710952356679-1eff1cb5ba64?auto=format&fit=crop&w=1900&q=92',
-    'Delhi NCR'=>'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1900&q=92',
-    'Mumbai'=>'https://images.unsplash.com/photo-1751608734207-1c68d53554b4?auto=format&fit=crop&w=1900&q=92',
-    'Bengaluru'=>'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1900&q=92',
-    'Hyderabad'=>'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=1900&q=92',
-    'Chandigarh'=>'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1900&q=92'
-    ];
-    $hero=$heroMap[$city]??reset($heroMap);
+    require_once __DIR__.'/includes/cities.php';
+    require_once __DIR__.'/includes/vendors.php';
+    $catalogue=wz_city_catalogue();
+    $allowed=array_column($catalogue,'name');
+    $requestedCity=is_string($_GET['city']??null)?trim($_GET['city']):'Jaipur';
+    $cityDetails=null;
+    foreach($catalogue as $candidate) {
+        if(mb_strtolower($candidate['name'],'UTF-8')===mb_strtolower($requestedCity,'UTF-8')) {
+            $cityDetails=$candidate;
+            break;
+        }
+    }
+    if(!$cityDetails) {
+        header('Location: cities.php?q='.rawurlencode(mb_substr($requestedCity,0,120,'UTF-8')));
+        exit;
+    }
+    $city=$cityDetails['name'];
+    $hero=$cityDetails['image'];
     $pageTitle=$city.' Event Vendors, Venues & Ideas';
     $pageDescription='Discover venues, vendors, real celebrations and planning ideas for weddings, birthdays, corporate events and private functions in '.$city.'.';
     $pageKey='city';
-    $localVendors=array_values(array_filter(wz_data('vendors'),fn($v)=>($v['city']??'')===$city));
+    $localVendors=array_values(array_filter(wz_public_vendors(),fn($v)=>strcasecmp(trim((string)($v['city']??'')),$city)===0));
     $localCelebrations=array_values(array_filter(wz_data('weddings'),fn($w)=>($w['city']??'')===$city));
     $events=wz_data('event_types');
     $cityNotes=[
@@ -31,13 +35,12 @@
     $note=$cityNotes[$city]??['A strong local plan makes every kind of event easier to execute.','Guest flow','Venue access','Local vendor fit'];
     require __DIR__.'/includes/header.php';
 ?>
+<link rel="stylesheet" href="assets/css/cities.css?v=2026-10-07">
+<noscript><style>.vision-preloader{display:none}</style></noscript>
 <main>
     <section class="landing-hero-v2 city-landing-v2">
         <div class="landing-hero-image">
-            <img src="<?=h($hero)?>
-            " alt="
-            <?= h($city) ?>
-            events">
+            <img src="<?=h($hero)?>" alt="<?=h($cityDetails['image_alt'])?>">
         </div>
         <div class="landing-hero-overlay">
         </div>
@@ -57,6 +60,7 @@
             <?= h($note[0]) ?>
             </p>
             <div class="landing-hero-actions">
+                <a class="vision-secondary" href="cities.php">All cities ↗</a>
                 <a class="vision-primary" href="vendors.php?city=<?=urlencode($city)?>
                 ">Browse
                 <?= h($city) ?>
@@ -72,7 +76,7 @@
             <div class="landing-stats">
                 <div>
                     <strong>
-                    <?= count($localVendors)?:'Growing' ?>
+                    <?= count($localVendors) ?>
                     </strong>
                     <span>
                     local vendor picks
@@ -215,12 +219,16 @@
                 vendors ↗
                 </a>
             </div>
-            <div class="vendor-grid">
-                <?php
-                    $display=$localVendors?:array_slice(wz_data('vendors'),0,6);
-                    foreach(array_slice($display,0,6) as $v) wz_vendor_card($v);
-                ?>
-            </div>
+            <?php if($localVendors): ?>
+                <div class="vendor-grid">
+                    <?php foreach(array_slice($localVendors,0,6) as $v) wz_vendor_card($v); ?>
+                </div>
+            <?php else: ?>
+                <div class="city-no-vendors">
+                    <p>We don’t have a published vendor shortlist for <?= h($city) ?> yet. Tell us what you’re planning and we’ll help you explore the options.</p>
+                    <a class="text-link" href="contact.php">Ask about <?= h($city) ?> ↗</a>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
     <?php
@@ -271,13 +279,13 @@
                     </em>
                     </h2>
                 </div>
+                <a class="text-link" href="cities.php">View all cities ↗</a>
             </div>
             <div class="city-link-row">
                 <?php
-                    foreach(array_filter($allowed,fn($x)=>$x!==$city) as $other):
+                    foreach(array_slice(array_values(array_filter($allowed,fn($x)=>$x!==$city)),0,6) as $other):
                 ?>
-                    <a href="city.php?city=<?=urlencode($other)?>
-                    ">
+                    <a href="city.php?city=<?=rawurlencode($other)?>">
                     <?= h($other) ?>
                     <span>
                     ↗

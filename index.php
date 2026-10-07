@@ -4,6 +4,7 @@
     require __DIR__.'/includes/auth.php';
     require __DIR__.'/includes/crm.php';
     require __DIR__.'/includes/marketplace.php';
+    require_once __DIR__.'/includes/cities.php';
 
     $homeCustomer=null;
     $homeRecommendations=[];
@@ -62,14 +63,12 @@
     $item=wz_wedding($fid);
     if($item)$featuredCelebrations[]=$item;
     }
-    $cities=[
-    ['Jaipur','Palaces · courtyards · colour','https://images.unsplash.com/photo-1767158597961-bd58dccc16bd?auto=format&fit=crop&w=1800&q=94'],
-    ['Udaipur','Lakes · light · old-world romance','https://images.unsplash.com/photo-1770665567877-72ee8a7c9051?auto=format&fit=crop&w=1800&q=94'],
-    ['Goa','Salt air · sunset · after-parties','https://images.unsplash.com/photo-1710952356679-1eff1cb5ba64?auto=format&fit=crop&w=1800&q=94'],
-    ['Delhi NCR','Grandeur · scale · everything close','https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1800&q=94']
-    ];
+    $cityCatalogue=wz_city_catalogue();
+    $cities=wz_city_featured($cityCatalogue);
     require __DIR__.'/includes/header.php';
 ?>
+<link rel="stylesheet" href="assets/css/cities.css?v=2026-10-07">
+<noscript><style>.vision-preloader{display:none}</style></noscript>
 <main class="vision-home">
     <section class="vision-hero celebration-hero" id="home">
         <div class="vision-hero-bg">
@@ -381,7 +380,7 @@
             </div>
         </div>
     </section>
-    <section class="vision-cities section-bleed">
+    <section class="vision-cities city-discovery section-bleed" id="cities" aria-labelledby="homeCityHeading">
         <div class="container vision-section-head">
             <div>
                 <span>
@@ -391,7 +390,7 @@
                 PLACE CHANGES EVERYTHING
                 </small>
             </div>
-            <h2>
+            <h2 id="homeCityHeading">
             Choose the city.
             <br>
             <em>
@@ -402,29 +401,34 @@
             Venue scale, logistics, light, weather, access and energy — the city quietly shapes every kind of function.
             </p>
         </div>
+        <div class="container city-home-tools">
+            <form action="cities.php#city-results" method="get" class="city-search" role="search" aria-label="Search cities">
+                <div class="city-search-field">
+                    <label for="homeCitySearch">Where are you celebrating?</label>
+                    <input type="search" id="homeCitySearch" name="q" placeholder="Search your city…" maxlength="120">
+                </div>
+                <button type="submit" class="city-action">Find a city <span aria-hidden="true">↗</span></button>
+            </form>
+            <a class="city-action city-view-all" href="cities.php">View all <?= count($cityCatalogue) ?> cities <span aria-hidden="true">↗</span></a>
+        </div>
         <div class="vision-city-rail-wrap">
             <div class="vision-city-rail" id="visionCityRail">
                 <?php
                     foreach($cities as $i=>$city):
                 ?>
-                    <a class="vision-city-card" href="city.php?city=<?=urlencode($city[0])?>
-                    ">
+                    <a class="vision-city-card" href="city.php?city=<?=rawurlencode($city['name'])?>">
                     <figure>
-                        <img src="<?=h($city[2])?>
-                        " alt="
-                        <?= h($city[0]) ?>
-                        event destination" loading="lazy" decoding="async">
+                        <img src="<?=h($city['image'])?>" alt="<?=h($city['image_alt'])?>" loading="lazy" decoding="async" width="600" height="400">
                     </figure>
                     <div>
                         <span>
-                        0
-                        <?= $i+1 ?>
+                        <?= sprintf('%02d', $i+1) ?>
                         </span>
                         <h3>
-                        <?= h($city[0]) ?>
+                        <?= h($city['name']) ?>
                         </h3>
                         <p>
-                        <?= h($city[1]) ?>
+                        <?= h($city['description']) ?>
                         </p>
                         <b>
                         Open city guide ↗
@@ -436,6 +440,7 @@
                 ?>
             </div>
         </div>
+        <p class="container city-home-note">A few places to start. Explore the full city list to find yours.</p>
     </section>
     <section class="vision-vendors section-bleed">
         <div class="container vision-section-head light">
