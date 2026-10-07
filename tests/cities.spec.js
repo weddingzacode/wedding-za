@@ -2,6 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 test('homepage has compact featured cities and links to the full list', async ({ page }, testInfo) => {
   await page.goto('/');
+  await expect(page.locator('#preloader')).toBeHidden();
   const section = page.locator('#cities');
   await section.scrollIntoViewIfNeeded();
   await expect(section.locator('.vision-city-card')).toHaveCount(4);
@@ -10,7 +11,7 @@ test('homepage has compact featured cities and links to the full list', async ({
   const columns = await section.locator('.vision-city-rail').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
   expect(columns).toBe(testInfo.project.name.startsWith('mobile') ? 2 : 4);
   expect(await section.evaluate(el => el.scrollWidth <= window.innerWidth)).toBeTruthy();
-  await page.screenshot({ path: testInfo.outputPath('featured-cities.png'), fullPage: false });
+  await section.screenshot({ path: testInfo.outputPath('featured-cities.png'), animations: 'disabled' });
   await section.getByLabel('Where are you celebrating?').fill('Mumbai');
   await section.getByRole('button', { name: 'Find a city' }).click();
   await expect(page.locator('.city-directory-card')).toHaveCount(1);
@@ -19,6 +20,7 @@ test('homepage has compact featured cities and links to the full list', async ({
 
 test('city directory searches, filters, clears and opens the selected guide', async ({ page }, testInfo) => {
   await page.goto('/cities.php');
+  await expect(page.locator('#preloader')).toBeHidden();
   const cards = page.locator('.city-directory-card');
   expect(await cards.count()).toBe(8);
   await expect(page.locator('.city-result-count')).toContainText('Showing 1–8 of 8 cities');
@@ -29,6 +31,10 @@ test('city directory searches, filters, clears and opens the selected guide', as
   await expect(cards).toHaveCount(1);
   await expect(cards.locator('h3')).toHaveText('Delhi NCR');
   await page.getByRole('link', { name: 'Clear filters' }).click();
+  // Internal links use a short page-wipe animation before navigation.
+  await expect(page).toHaveURL(/\/cities\.php#city-results$/);
+  await expect(page.getByLabel('Search by city name')).toHaveValue('');
+  await expect(cards).toHaveCount(8);
   await page.getByLabel('Starts with').selectOption('M');
   await page.getByRole('button', { name: 'Find a city' }).click();
   await expect(cards).toHaveCount(1);
