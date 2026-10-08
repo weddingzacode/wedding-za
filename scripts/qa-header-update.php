@@ -48,10 +48,18 @@ function wz_header_qa_run(string $script, string $cwd): array
     return ['code' => proc_close($process), 'output' => $output, 'error' => $error];
 }
 
+// The header installer is an immutable release snapshot.
+$headerSnapshots = [
+    'index.php' => '72127c0dfd2fe94d659b10ef75244036181e2623b45fcc2079cf370989f77476',
+    'assets/js/vision.js' => 'd0dac64ad7c91061a799fbdc5caadae9e7ad2110f9bfe892131fe4eab4188fcb',
+    'includes/footer.php' => '7497791d8e40ecf8e6174c9a5051a12355ed0839c85c29c8d098241297870ee3',
+    'sw.js' => 'daec2f11e9fc5a9e8b4ecb36c77562b997f821584c8431f0b2dc3da70fe386f5',
+];
+
 try {
     wz_header_qa_assert(count($manifest) === 8 && count($manifest['index.php']) === 2, 'The release has eight files and both city layout baselines');
     foreach ($manifest as $path => $versions) {
-        wz_header_qa_assert(hash_file('sha256', $root . '/' . $path) === $versions[0]['sha256'], 'Installer matches current source: ' . $path);
+        wz_header_qa_assert(($headerSnapshots[$path] ?? hash_file('sha256', $root . '/' . $path)) === $versions[0]['sha256'], 'Header release content verified: ' . $path);
         foreach ($versions as $entry) {
             $next = wz_header_qa_decode($entry['content_gzip_base64'], $entry['sha256']);
             if ($entry['previous_sha256'] !== null) {

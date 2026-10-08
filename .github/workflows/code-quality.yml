@@ -47,6 +47,9 @@ jobs:
       - name: Check header installer safety
         run: php scripts/qa-header-update.php
 
+      - name: Check homepage installer safety
+        run: php scripts/qa-homepage-update.php
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -207,4 +210,16 @@ jobs:
           path: |
             test-results/header-*/homepage-header.png
             test-results/header-*/mobile-menu.png
+          retention-days: 7
+
+      - name: Save homepage preview images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-previews
+          path: |
+            test-results/home-*/homepage-hero.png
+            test-results/home-*/homepage-events.png
+            test-results/home-*/homepage-stories.png
+            test-results/home-*/homepage-overview.png
           retention-days: 7

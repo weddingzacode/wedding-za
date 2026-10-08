@@ -31,83 +31,25 @@
   }
   function heroPlanner() {
     const form = $('#heroPlanDock');
-    const eventSelect = $('#heroEvent');
-    const preview = $('#heroPlanPreview');
-    const label = $('#heroPlanLabel');
 
-    if (!form || !eventSelect) {
+    if (!form) {
       return;
     }
 
-    const updateFieldState = () => {
+    const updateFields = () => {
       $$('label', form).forEach((field) => {
         const select = field.querySelector('select');
-
-        if (!select) {
-          return;
-        }
-
-        field.classList.toggle(
-          'is-filled',
-          Boolean(select.value)
-        );
+        field.classList.toggle('is-filled', Boolean(select?.value));
       });
     };
 
-    const updatePreview = () => {
-      const option = eventSelect.options[
-        eventSelect.selectedIndex
-      ];
-
-      const source = option?.dataset?.image;
-
-      if (label) {
-        label.textContent = eventSelect.value
-          ? `Plan a ${eventSelect.value.toLowerCase()}`
-          : 'Build your event team';
-      }
-
-      if (
-        preview &&
-        source &&
-        preview.src !== source
-      ) {
-        preview.classList.add('is-changing');
-
-        const image = new Image();
-
-        image.onload = () => {
-          preview.src = source;
-
-          requestAnimationFrame(() => {
-            preview.classList.remove('is-changing');
-          });
-        };
-
-        image.src = source;
-      }
-
-      updateFieldState();
-    };
-
-    eventSelect.addEventListener(
-      'change',
-      updatePreview
-    );
-
-    $$('select', form).forEach((select) => {
-      select.addEventListener(
-        'change',
-        updateFieldState
-      );
-    });
-
-    updatePreview();
+    form.addEventListener('change', updateFields);
+    updateFields();
   }
   function smoothScroll() {
     if(reduce || typeof Lenis==='undefined')return;
     const lenis=new Lenis( {
-      duration:.92,smoothWheel:true,wheelMultiplier:.9,touchMultiplier:1.05
+      duration:.65,smoothWheel:true,wheelMultiplier:1,touchMultiplier:1.05
     }
     );
     if(typeof gsap!=='undefined'&&typeof ScrollTrigger!=='undefined') {
@@ -128,61 +70,48 @@
   function animate() {
     if(reduce || typeof gsap==='undefined')return;
     if(typeof ScrollTrigger!=='undefined')gsap.registerPlugin(ScrollTrigger);
-    // Opening sequence — image first, typography second.
-    const hero=$('.vision-hero');
-    if(hero) {
-      const tl=gsap.timeline( {
-        delay:.48,defaults: {
-          ease:'power4.out'
+    // Search stays usable from first paint while the imagery and title settle.
+    const hero = $('.vision-hero');
+
+    if (hero) {
+      const opening = gsap.timeline({
+        delay: .1,
+        defaults: { ease: 'power3.out' }
+      });
+
+      opening.from($('.vision-hero-bg img', hero), {
+        scale: 1.08,
+        duration: 1.1
+      }, 0);
+
+      opening.from($$('.hero-line', hero), {
+        y: 20,
+        opacity: 0,
+        duration: .65,
+        stagger: .08
+      }, .12);
+
+      const details = $$('.vision-hero-copy, .home-hero-portrait', hero);
+
+      if (details.length) {
+        opening.from(details, {
+          y: 16,
+          opacity: 0,
+          duration: .6,
+          stagger: .08
+        }, .25);
+      }
+
+      gsap.to($('.vision-hero-bg img', hero), {
+        yPercent: 4,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true
         }
-      }
-      );
-      tl.from('.vision-hero-bg img', {
-        scale:1.16,duration:1.8
-      }
-      )
-      .from('.hero-line', {
-        yPercent:115,clipPath:'inset(0 0 100% 0)',duration:1.15,stagger:.12
-      },
-      '-=.95')
-      .from('.vision-hero-copy', {
-        y:28,opacity:0,duration:.75
-      },
-      '-=.72')
-      .from('.vision-hero-actions', {
-        y:20,opacity:0,duration:.6
-      },
-      '-=.58')
-      .from('.celebration-types a', {
-        y:16,opacity:0,duration:.45,stagger:.045
-      },
-      '-=.48')
-      .from('.hero-plan-dock', {
-        y:28,opacity:0,duration:.8
-      },
-      '-=.52')
-      .from('.vhero-float', {
-        y:55,opacity:0,scale:.94,duration:1,stagger:.12
-      },
-      '-=.72');
-      gsap.to('.vision-hero-bg img', {
-        yPercent:9,ease:'none',scrollTrigger: {
-          trigger:hero,start:'top top',end:'bottom top',scrub:true
-        }
-      }
-      );
-      gsap.to('.vhero-float-a', {
-        yPercent:-18,ease:'none',scrollTrigger: {
-          trigger:hero,start:'top top',end:'bottom top',scrub:true
-        }
-      }
-      );
-      gsap.to('.vhero-float-b', {
-        yPercent:-33,ease:'none',scrollTrigger: {
-          trigger:hero,start:'top top',end:'bottom top',scrub:true
-        }
-      }
-      );
+      });
     }
     // Editorial title reveals on every page.
     $$('[data-split-title]').forEach(el=> {
@@ -404,17 +333,6 @@
         }
       });
     }
-    // Stacked real-wedding scenes receive depth as the next story arrives.
-    $$('.vision-real-panel').forEach((panel,i,arr)=> {
-      if(i===arr.length-1)return;
-      gsap.to(panel, {
-        scale:.92,opacity:.45,filter:'brightness(.65)',ease:'none',scrollTrigger: {
-          trigger:arr[i+1],start:'top bottom',end:'top top',scrub:true
-        }
-      }
-      );
-    }
-    );
     // Concierge image breathes instead of tilting.
     const concierge=$('.vision-concierge');
     if(concierge)gsap.fromTo('.vision-concierge-image img', {
@@ -427,7 +345,7 @@
     }
     );
     // Small content groups stagger only once.
-    $$('.vision-featured-stack,.vision-journal-grid,.story-grid-premium,.vendor-grid').forEach(group=> {
+    $$('.vision-featured-vendors,.vision-real-stage,.vision-journal-grid,.home-step-grid,.story-grid-premium,.vendor-grid').forEach(group=> {
       const kids=[...group.children];
       gsap.from(kids, {
         y:38,opacity:0,duration:.75,stagger:.08,ease:'power3.out',scrollTrigger: {

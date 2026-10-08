@@ -34,6 +34,6 @@ variants, private backups, repeated runs, refusal of local edits and symlinks,
 and preservation of owner data. Playwright checks desktop and phone links,
 keyboard navigation, JavaScript-free links and header fit from 320px to 1600px.
 
-The older city and policy installers remain immutable release snapshots.
-Their QA verifies snapshot hashes and exercises those snapshots, while the
-header installer QA verifies the current shared layout source.
+The header, city and policy installers remain immutable release snapshots.
+Their QA verifies snapshot hashes and exercises those snapshots. The homepage
+release checks current homepage source and its deployed header baseline.
