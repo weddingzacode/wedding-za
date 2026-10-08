@@ -141,10 +141,6 @@
         scale:1.16,duration:1.8
       }
       )
-      .from('.vision-hero-eyebrow', {
-        y:20,opacity:0,duration:.7
-      },
-      '-=1.15')
       .from('.hero-line', {
         yPercent:115,clipPath:'inset(0 0 100% 0)',duration:1.15,stagger:.12
       },

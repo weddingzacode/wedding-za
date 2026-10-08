@@ -46,7 +46,13 @@ function wz_city_update_run(string $script, string $cwd): array
 
 try {
     foreach ($manifest as $path => $entry) {
-        wz_city_update_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches source: ' . $path);
+        $snapshot = gzdecode(base64_decode($entry['content_gzip_base64'], true));
+        wz_city_update_assert(hash('sha256', $snapshot) === $entry['sha256'], 'Verified release snapshot: ' . $path);
+        // Keep this immutable installer self-contained. The later header release
+        // owns homepage layout changes and checks its source in qa-header-update.php.
+        if ($path !== 'index.php') {
+            wz_city_update_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches source: ' . $path);
+        }
         if ($entry['previous_sha256'] !== null) {
             $previous = gzdecode(base64_decode($entry['previous_content_gzip_base64'], true));
             wz_city_update_assert(hash('sha256', $previous) === $entry['previous_sha256'], 'Verified upgrade baseline: ' . $path);

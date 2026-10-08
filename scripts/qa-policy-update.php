@@ -46,11 +46,17 @@ function wz_policy_qa_run(string $script, string $cwd, string $input = ''): arra
 
 try {
     foreach ($manifest as $path => $entry) {
-        wz_policy_qa_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches checked source: ' . $path);
+        $snapshot = gzdecode(base64_decode($entry['content_gzip_base64'], true));
+        wz_policy_qa_assert(hash('sha256', $snapshot) === $entry['sha256'], 'Verified release snapshot: ' . $path);
+        // Shared navigation has a later, separately verified release. Do not
+        // silently add its new assets to this immutable policy-only installer.
+        if (!in_array($path, ['includes/header.php', 'includes/footer.php'], true)) {
+            wz_policy_qa_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches checked source: ' . $path);
+        }
         if (!is_dir(dirname($webRoot . '/' . $path))) {
             mkdir(dirname($webRoot . '/' . $path), 0700, true);
         }
-        copy($root . '/' . $path, $webRoot . '/' . $path);
+        file_put_contents($webRoot . '/' . $path, $snapshot);
     }
     foreach (['bootstrap.php', 'database.php'] as $path) {
         copy($root . '/includes/' . $path, $webRoot . '/includes/' . $path);

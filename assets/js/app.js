@@ -88,6 +88,7 @@
     const progress = qs('#pageProgress');
     const button = qs('#menuToggle');
     const menu = qs('#mobileMenu');
+    const backgroundStates = new Map();
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -108,6 +109,31 @@
     };
 
     const setMenu = (open) => {
+      if (!button || !menu || open === menu.classList.contains('open')) {
+        return;
+      }
+
+      const returnFocus = menu.contains(document.activeElement);
+      menu.inert = !open;
+
+      if (open) {
+        [...document.body.children].forEach((element) => {
+          if (element === header || element === menu || element.tagName === 'SCRIPT') {
+            return;
+          }
+          backgroundStates.set(element, element.inert);
+          element.inert = true;
+        });
+        window.WZ_LENIS?.stop();
+      } else {
+        backgroundStates.forEach((inert, element) => {
+          element.inert = inert;
+        });
+        backgroundStates.clear();
+        window.WZ_LENIS?.start();
+      }
+
+      button.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       document.body.classList.toggle(
         'menu-open',
         open
@@ -132,6 +158,14 @@
         'aria-hidden',
         String(!open)
       );
+
+      if (open) {
+        requestAnimationFrame(() => {
+          qs('a', menu)?.focus({ preventScroll: true });
+        });
+      } else if (returnFocus) {
+        button.focus({ preventScroll: true });
+      }
     };
 
     window.addEventListener(
@@ -154,8 +188,33 @@
       }
     });
 
+    header?.addEventListener('click', (event) => {
+      if (event.target.closest('a')) {
+        setMenu(false);
+      }
+    });
+
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
+        setMenu(false);
+      }
+      if (event.key === 'Tab' && menu?.classList.contains('open')) {
+        const items = [...qsa('a, button', header), ...qsa('a, button', menu)]
+          .filter((element) => element.getClientRects().length && !element.closest('[inert]'));
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1280) {
         setMenu(false);
       }
     });
@@ -322,6 +381,7 @@
 
       if (count) {
         count.textContent = String(ids.length);
+        count.hidden = ids.length === 0;
       }
 
       qsa('[data-shortlist]').forEach((button) => {

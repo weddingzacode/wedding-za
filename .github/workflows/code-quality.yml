@@ -44,6 +44,9 @@ jobs:
       - name: Check city installer safety
         run: php scripts/qa-city-update.php
 
+      - name: Check header installer safety
+        run: php scripts/qa-header-update.php
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

@@ -77,9 +77,6 @@
         <div class="vision-hero-vignette">
         </div>
         <div class="container vision-hero-stage">
-            <div class="vision-hero-eyebrow">
-                INDIA’S CELEBRATION DISCOVERY PLATFORM / 2026
-            </div>
             <div class="hero-occasion-line" aria-hidden="true">
                 <span>
                 Weddings
@@ -232,16 +229,6 @@
             02 / CORPORATE
             </figcaption>
         </figure>
-        <div class="vision-scroll-note">
-            <span>
-            SCROLL
-            </span>
-            <i>
-            </i>
-            <span>
-            DISCOVER
-            </span>
-        </div>
     </section>
 
     <?php if($homeCustomer!==null): ?>
