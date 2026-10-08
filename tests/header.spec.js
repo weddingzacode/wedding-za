@@ -4,7 +4,7 @@ test('first section has a premium header and no removed labels', async ({ page }
   if (testInfo.project.name === 'desktop-chromium') {
     await page.setViewportSize({ width: 1600, height: 900 });
   }
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#preloader')).toBeHidden();
   const header = page.locator('#siteHeader');
   await expect(header.getByRole('link', { name: 'Plan an event' })).toBeVisible();
@@ -24,7 +24,7 @@ test('first section has a premium header and no removed labels', async ({ page }
 test('Contact is reachable through desktop navigation and the mobile menu', async ({ page }, testInfo) => {
   const mobile = testInfo.project.name === 'mobile-chromium';
   if (!mobile) await page.setViewportSize({ width: 1600, height: 900 });
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#preloader')).toBeHidden();
   if (mobile) {
     await page.getByRole('button', { name: 'Open menu' }).click();
@@ -40,7 +40,7 @@ test('Contact is reachable through desktop navigation and the mobile menu', asyn
 });
 
 test('Plan an event opens the actual planning workspace', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#preloader')).toBeHidden();
   await page.locator('#siteHeader').getByRole('link', { name: 'Plan an event' }).click();
   await expect(page).toHaveURL(/\/planner\.php$/);
@@ -50,10 +50,10 @@ test('Plan an event opens the actual planning workspace', async ({ page }) => {
 });
 
 test('navigation controls fit phones, tablets and desktops without overlap', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#preloader')).toBeHidden();
   await page.evaluate(() => document.fonts.ready);
-  for (const width of [320, 360, 393, 720, 768, 1024, 1280, 1366, 1600]) {
+  for (const width of [320, 360, 393, 720, 721, 768, 1024, 1280, 1281, 1366, 1600]) {
     await page.setViewportSize({ width, height: 900 });
     const layout = await page.locator('#siteHeader .vision-nav').evaluate(nav => {
       const outer = nav.getBoundingClientRect();
@@ -75,9 +75,9 @@ test('navigation controls fit phones, tablets and desktops without overlap', asy
 
 test('mobile menu supports Escape, focus return and resizing', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#preloader')).toBeHidden();
-  const button = page.getByRole('button', { name: 'Open menu' });
+  const button = page.locator('#menuToggle');
   const menu = page.locator('#mobileMenu');
   await button.click();
   await expect(button).toHaveAttribute('aria-expanded', 'true');

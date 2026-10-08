@@ -394,32 +394,32 @@ if (wz_is_logged_in()) {
                 <small>EXPLORE</small>
 
                 <a href="venues.php">
-                    <span>01</span>
+                    <span aria-hidden="true">01</span>
                     Venues
                 </a>
 
                 <a href="vendors.php">
-                    <span>02</span>
+                    <span aria-hidden="true">02</span>
                     Vendors
                 </a>
 
                 <a href="inspiration.php">
-                    <span>03</span>
+                    <span aria-hidden="true">03</span>
                     Ideas & inspiration
                 </a>
 
                 <a href="real-weddings.php">
-                    <span>04</span>
+                    <span aria-hidden="true">04</span>
                     Real celebrations
                 </a>
 
                 <a href="blog.php">
-                    <span>05</span>
+                    <span aria-hidden="true">05</span>
                     The journal
                 </a>
 
                 <a href="contact.php">
-                    <span>06</span>
+                    <span aria-hidden="true">06</span>
                     Contact
                 </a>
             </div>
