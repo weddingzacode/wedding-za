@@ -89,6 +89,14 @@
     const button = qs('#menuToggle');
     const menu = qs('#mobileMenu');
     const backgroundStates = new Map();
+    let menuFocusTimer;
+
+    const focusMenu = () => {
+      if (menu?.classList.contains('open')
+        && (document.activeElement === button || document.activeElement === document.body)) {
+        qs('a', menu)?.focus({ preventScroll: true });
+      }
+    };
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -114,6 +122,7 @@
       }
 
       const returnFocus = menu.contains(document.activeElement);
+      clearTimeout(menuFocusTimer);
       menu.inert = !open;
 
       if (open) {
@@ -160,9 +169,10 @@
       );
 
       if (open) {
-        requestAnimationFrame(() => {
-          qs('a', menu)?.focus({ preventScroll: true });
-        });
+        // Focus after the reveal. Chromium can reject focus at the initial
+        // hidden frame of the visibility/clip-path transition.
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        menuFocusTimer = setTimeout(focusMenu, reducedMotion ? 50 : 750);
       } else if (returnFocus) {
         button.focus({ preventScroll: true });
       }
@@ -185,6 +195,12 @@
     menu?.addEventListener('click', (event) => {
       if (event.target.closest('a')) {
         setMenu(false);
+      }
+    });
+
+    menu?.addEventListener('transitionend', (event) => {
+      if (event.target === menu && event.propertyName === 'clip-path') {
+        focusMenu();
       }
     });
 
