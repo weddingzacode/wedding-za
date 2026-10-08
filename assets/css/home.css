@@ -297,6 +297,13 @@ body[data-page="home"] {
   line-height: 1.65;
 }
 
+/* Keep compact card captions inside their panels during image animation. */
+.home-refreshed .vision-category-copy > *,
+.home-refreshed .vision-city-card b {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 .home-refreshed .vision-category-copy b,
 .home-refreshed .vision-city-card b {
   font-size: 11px;

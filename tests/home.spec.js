@@ -47,6 +47,11 @@ test('occasion photos load and birthday navigation preserves the selected occasi
     await expect(image).not.toHaveAttribute('data-wz-fallback', '1');
     const caption = image.locator('xpath=ancestor::a').locator('.vision-category-copy b');
     await expect.poll(() => caption.evaluate(el => Number(getComputedStyle(el).opacity))).toBe(1);
+    await expect.poll(() => caption.evaluate(el => {
+      const link = el.getBoundingClientRect();
+      const panel = el.closest('.vision-category-panel').getBoundingClientRect();
+      return link.top >= panel.top && link.bottom <= panel.bottom - 8;
+    })).toBeTruthy();
   }
   await events.screenshot({
     path: testInfo.outputPath('homepage-events.png'),
