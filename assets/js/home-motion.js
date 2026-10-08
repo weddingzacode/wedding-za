@@ -21,6 +21,12 @@
     )];
     const headings = [...home.querySelectorAll('h1, .vision-section-head h2, .home-steps h2, .vision-concierge-grid h2')];
     const finaleHeading = document.querySelector('.vision-finale h2');
+    const sectionHeads = [...home.querySelectorAll('.vision-section-head, .home-steps-head')];
+    const magneticButtons = [...document.querySelectorAll(
+      '.home-refreshed .hero-plan-dock > button, .home-refreshed .home-help-actions a, .vision-finale a'
+    )];
+    const photoCurtains = new Map();
+    const revealedPhotos = new Set();
     let userPaused = false;
     let context = null;
     let cleanupPointer = () => {};
@@ -38,7 +44,53 @@
       // The preference is optional when browser storage is unavailable.
     }
 
-    cards.forEach(card => card.classList.add('home-motion-card'));
+    cards.forEach(card => {
+      card.classList.add('home-motion-card');
+      const light = document.createElement('i');
+      light.className = 'home-card-light';
+      light.setAttribute('aria-hidden', 'true');
+      card.append(light);
+    });
+    magneticButtons.forEach(button => button.classList.add('home-magnetic-button'));
+
+    sectionHeads.forEach(header => {
+      header.classList.add('home-section-motion');
+      const divider = document.createElement('div');
+      divider.className = 'home-motion-divider';
+      divider.setAttribute('aria-hidden', 'true');
+      ['line', 'diamond', 'line'].forEach(part => {
+        const element = document.createElement('i');
+        element.className = `home-motion-divider-${part}`;
+        divider.append(element);
+      });
+      header.append(divider);
+    });
+
+    home.querySelectorAll(
+      '.vision-category-image, .vision-city-card figure, .vendor-media, .home-idea-image, .journal-media'
+    ).forEach((box, index) => {
+      box.classList.add('home-motion-photo');
+      const curtain = document.createElement('div');
+      curtain.className = 'home-photo-curtain';
+      curtain.classList.toggle('home-photo-curtain-wine', index % 2 === 0);
+      curtain.setAttribute('aria-hidden', 'true');
+      curtain.append(document.createElement('i'), document.createElement('i'));
+      box.append(curtain);
+      photoCurtains.set(box, curtain);
+    });
+
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+    const portraitTrace = document.createElementNS(svgNamespace, 'svg');
+    portraitTrace.classList.add('home-portrait-trace');
+    portraitTrace.setAttribute('viewBox', '0 0 300 400');
+    portraitTrace.setAttribute('preserveAspectRatio', 'none');
+    portraitTrace.setAttribute('aria-hidden', 'true');
+    portraitTrace.setAttribute('focusable', 'false');
+    const portraitOutline = document.createElementNS(svgNamespace, 'path');
+    portraitOutline.setAttribute('d', 'M14 399 H286 Q299 399 299 385 V111 Q299 1 189 1 H111 Q1 1 1 111 V385 Q1 399 14 399 Z');
+    portraitOutline.setAttribute('pathLength', '1');
+    portraitTrace.append(portraitOutline);
+    hero.querySelector('.home-hero-portrait').append(portraitTrace);
 
     const glow = document.createElement('div');
     glow.className = 'home-motion-glow';
@@ -108,6 +160,8 @@
         const { card, x, y } = pending;
         card.style.setProperty('--card-x', `${y * -2.2}deg`);
         card.style.setProperty('--card-y', `${x * 2.2}deg`);
+        card.style.setProperty('--spot-x', `${(x + 1) * 50}%`);
+        card.style.setProperty('--spot-y', `${(y + 1) * 50}%`);
         pending = null;
       }
 
@@ -135,6 +189,8 @@
           }
           card.style.removeProperty('--card-x');
           card.style.removeProperty('--card-y');
+          card.style.removeProperty('--spot-x');
+          card.style.removeProperty('--spot-y');
         };
 
         card.addEventListener('pointermove', move, { passive: true });
@@ -149,6 +205,59 @@
         listeners.forEach(({ card, move, leave }) => {
           card.removeEventListener('pointermove', move);
           card.removeEventListener('pointerleave', leave);
+          leave();
+        });
+      };
+    }
+
+    function magneticMotion() {
+      if (!finePointer.matches) {
+        return () => {};
+      }
+
+      const listeners = [];
+      magneticButtons.forEach(button => {
+        let frame = null;
+        let position = null;
+
+        const move = event => {
+          if (event.pointerType !== 'mouse') {
+            return;
+          }
+          const bounds = button.getBoundingClientRect();
+          position = {
+            x: Math.max(-3, Math.min(3, (event.clientX - bounds.left - bounds.width / 2) * .04)),
+            y: Math.max(-3, Math.min(3, (event.clientY - bounds.top - bounds.height / 2) * .06))
+          };
+          if (frame === null) {
+            frame = requestAnimationFrame(() => {
+              frame = null;
+              button.style.setProperty('--magnetic-x', `${position.x}px`);
+              button.style.setProperty('--magnetic-y', `${position.y}px`);
+            });
+          }
+        };
+
+        const leave = () => {
+          if (frame !== null) {
+            cancelAnimationFrame(frame);
+            frame = null;
+          }
+          button.style.removeProperty('--magnetic-x');
+          button.style.removeProperty('--magnetic-y');
+        };
+
+        button.addEventListener('pointermove', move, { passive: true });
+        button.addEventListener('pointerleave', leave);
+        button.addEventListener('blur', leave);
+        listeners.push({ button, move, leave });
+      });
+
+      return () => {
+        listeners.forEach(({ button, move, leave }) => {
+          button.removeEventListener('pointermove', move);
+          button.removeEventListener('pointerleave', leave);
+          button.removeEventListener('blur', leave);
           leave();
         });
       };
@@ -216,6 +325,11 @@
           opacity: 1,
           duration: 1.25
         }, .2);
+        opening.fromTo(portraitOutline, { strokeDashoffset: 1 }, {
+          strokeDashoffset: 0,
+          duration: 2.1,
+          ease: 'power2.inOut'
+        }, .25);
         opening.fromTo(hero.querySelector('.vision-hero-copy'), { y: 12, opacity: .4 }, {
           y: 0,
           opacity: 1,
@@ -254,17 +368,67 @@
           }
         });
 
+        sectionHeads.forEach(header => {
+          const divider = header.querySelector('.home-motion-divider');
+          const details = [header.querySelector('small, .home-kicker'), header.querySelector(':scope > p')].filter(Boolean);
+          const reveal = gsap.timeline({
+            scrollTrigger: { trigger: header, start: 'top 92%', once: true }
+          });
+          reveal.fromTo(details, { y: 10, opacity: .55 }, {
+            y: 0,
+            opacity: 1,
+            duration: .65,
+            stagger: .1,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity'
+          }, 0);
+          reveal.fromTo(divider.querySelectorAll('.home-motion-divider-line'), { scaleX: 0 }, {
+            scaleX: 1,
+            duration: 1.05,
+            stagger: .1,
+            ease: 'power3.inOut'
+          }, .15);
+          reveal.fromTo(divider.querySelector('.home-motion-divider-diamond'), { scale: .2, rotation: -135 }, {
+            scale: 1,
+            rotation: 45,
+            duration: .9,
+            ease: 'power3.out'
+          }, .35);
+        });
+
         home.querySelectorAll(
           '.vision-category-image img, .vision-city-card figure img, .vendor-media img, .vision-real-panel img, .home-idea-image img, .journal-media img'
         ).forEach(photo => {
-          gsap.fromTo(photo, { scale: 1.14, opacity: .45, yPercent: 2 }, {
+          if (revealedPhotos.has(photo)) {
+            return;
+          }
+          const curtain = photoCurtains.get(photo.parentElement);
+          const reveal = gsap.timeline({
+            onComplete: () => {
+              revealedPhotos.add(photo);
+              if (curtain) {
+                curtain.hidden = true;
+              }
+            },
+            scrollTrigger: { trigger: photo.parentElement, start: 'top 94%', once: true }
+          });
+          reveal.fromTo(photo, { scale: 1.14, opacity: .45, yPercent: 2, clipPath: 'inset(0% 0% 22% 0%)' }, {
             scale: 1.035,
             opacity: 1,
             yPercent: 0,
+            clipPath: 'inset(0% 0% 0% 0%)',
             duration: .95,
             ease: 'power3.out',
-            scrollTrigger: { trigger: photo.parentElement, start: 'top 94%', once: true }
-          });
+            clearProps: 'clipPath'
+          }, 0);
+          if (curtain) {
+            reveal.fromTo(curtain.children, { yPercent: 0 }, {
+              yPercent: index => index === 0 ? -101 : 101,
+              duration: .85,
+              stagger: .06,
+              ease: 'power3.inOut'
+            }, 0);
+          }
         });
 
         home.querySelectorAll('.vision-featured-vendors, .vision-real-stage, .vision-idea-collage, .vision-journal-grid').forEach(group => {
@@ -325,7 +489,12 @@
         window.WZ_LENIS = lenis;
       }
 
-      cleanupPointer = pointerMotion();
+      const stopCards = pointerMotion();
+      const stopButtons = magneticMotion();
+      cleanupPointer = () => {
+        stopCards();
+        stopButtons();
+      };
       ScrollTrigger.refresh();
     }
 

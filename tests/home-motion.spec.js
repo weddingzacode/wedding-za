@@ -101,3 +101,67 @@ test('changing reduced motion preferences stops effects and restores visible tex
   await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'running');
   await expect(page.getByRole('button', { name: 'Pause animations', exact: true })).toBeVisible();
 });
+
+test('photo panels open fully and decorative dividers do not block browsing', async ({ page }, testInfo) => {
+  await openHome(page, testInfo);
+  const card = page.locator('.vision-category-panel').first();
+  const curtain = card.locator('.home-photo-curtain');
+  await expect(curtain).toHaveAttribute('aria-hidden', 'true');
+  expect(await curtain.locator('i').first().evaluate(panel => panel.offsetHeight)).toBeGreaterThan(20);
+  await card.scrollIntoViewIfNeeded();
+  await expect(curtain).toBeHidden();
+  await expect.poll(() => curtain.evaluate(element => element.hidden)).toBeTruthy();
+  expect(await curtain.evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
+  expect(await card.locator('img').evaluate(image => getComputedStyle(image).clipPath)).toBe('none');
+  if (page.viewportSize().width <= 720) {
+    const title = await page.locator('#homeEventsHeading').boundingBox();
+    const description = await page.locator('#visionExperience .vision-section-head > p').boundingBox();
+    expect(title.width).toBeGreaterThan(page.viewportSize().width * .8);
+    expect(description.y).toBeGreaterThanOrEqual(title.y + title.height);
+  }
+  const divider = page.locator('#visionExperience .home-motion-divider');
+  await expect(divider).toHaveAttribute('aria-hidden', 'true');
+  await expect.poll(() => divider.locator('.home-motion-divider-line').evaluateAll(lines =>
+    lines.every(line => Math.abs(new DOMMatrixReadOnly(getComputedStyle(line).transform).a - 1) < .01)
+  )).toBeTruthy();
+  await page.locator('#visionExperience').screenshot({
+    path: testInfo.outputPath('homepage-motion-photo-panels.png'),
+    style: '#pageWipe:not(.active), #siteHeader { visibility: hidden !important; }',
+  });
+  await expect(curtain).toBeHidden();
+  await card.click();
+  await expect(page).toHaveURL(/\/event\.php\?type=Wedding$/);
+});
+
+test('mouse highlights and magnetic actions reset, and pausing clears decorative movement', async ({ page }, testInfo) => {
+  await openHome(page, testInfo);
+  const button = page.getByRole('button', { name: 'Find venues & vendors' });
+  const card = page.locator('.vision-category-panel').first();
+  const supportsPointer = await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches);
+  if (supportsPointer) {
+    const bounds = await button.boundingBox();
+    await button.hover({ position: { x: bounds.width - 25, y: bounds.height / 2 } });
+    await expect.poll(() => button.evaluate(element => parseFloat(element.style.getPropertyValue('--magnetic-x')))).toBeGreaterThan(0);
+    expect(await button.evaluate(element => parseFloat(element.style.getPropertyValue('--magnetic-x')))).toBeLessThanOrEqual(3);
+    await page.mouse.move(5, page.viewportSize().height - 5);
+    await expect.poll(() => button.evaluate(element => element.style.getPropertyValue('--magnetic-x'))).toBe('');
+    await card.scrollIntoViewIfNeeded();
+    const cardBounds = await card.boundingBox();
+    await page.mouse.move(cardBounds.x + cardBounds.width * .75, cardBounds.y + cardBounds.height * .25);
+    await expect.poll(() => card.evaluate(element => parseFloat(element.style.getPropertyValue('--spot-x')))).toBeGreaterThan(60);
+    await expect.poll(() => card.locator('.home-card-light').evaluate(element => getComputedStyle(element).opacity)).toBe('1');
+  } else {
+    expect(await button.evaluate(element => getComputedStyle(element).translate)).toBe('none');
+    await expect(card.locator('.home-card-light')).toBeHidden();
+  }
+  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
+  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'paused');
+  for (const decoration of await page.locator('.home-photo-curtain, .home-card-light, .home-motion-divider, .home-portrait-trace').all()) {
+    await expect(decoration).toBeHidden();
+  }
+  expect(await button.evaluate(element => getComputedStyle(element).translate)).toBe('none');
+  expect(await card.locator('img').evaluate(image => getComputedStyle(image).clipPath)).toBe('none');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'reduced');
+  await expect(page.locator('.home-motion-toggle')).toBeHidden();
+});

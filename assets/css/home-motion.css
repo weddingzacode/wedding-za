@@ -53,6 +53,118 @@ body[data-page="home"] .vision-finale h2 .home-motion-word {
   animation-play-state: paused;
 }
 
+.home-portrait-trace {
+  display: none;
+  position: absolute;
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  pointer-events: none;
+}
+
+.home-motion-on .home-portrait-trace {
+  display: block;
+}
+
+.home-portrait-trace path {
+  fill: none;
+  stroke: rgba(242, 206, 174, .85);
+  stroke-width: 1.3px;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  vector-effect: non-scaling-stroke;
+}
+
+.home-motion-on .home-section-motion {
+  position: relative;
+}
+
+.home-refreshed .home-section-motion > .home-motion-divider {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: -18px;
+  left: 0;
+  height: 6px;
+  flex-direction: row;
+  gap: 14px;
+  align-items: center;
+  pointer-events: none;
+  opacity: .3;
+}
+
+.home-motion-on .home-refreshed .home-motion-divider {
+  display: flex;
+}
+
+.home-motion-divider-line {
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left;
+}
+
+.home-motion-divider-line:last-child {
+  transform-origin: right;
+}
+
+.home-motion-divider-diamond {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.home-motion-photo {
+  position: relative;
+}
+
+.home-photo-curtain {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-motion-on .home-photo-curtain {
+  display: flex;
+}
+
+.home-photo-curtain[hidden] {
+  display: none !important;
+}
+
+.home-photo-curtain > i {
+  flex: 1;
+  height: 100%;
+  background: #eadbcb;
+}
+
+.home-photo-curtain > i:last-child {
+  background: #dfc1b1;
+}
+
+.home-photo-curtain-wine > i {
+  background: #76263e;
+}
+
+.home-photo-curtain-wine > i:last-child {
+  background: #48222d;
+}
+
+.home-card-light {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle 150px at var(--spot-x, 50%) var(--spot-y, 50%), rgba(255, 234, 209, .17), transparent 100%);
+  transition: opacity .3s ease;
+}
+
 .home-motion-on .hero-plan-dock {
   outline: 1px solid rgba(255, 255, 255, .18);
   transition: box-shadow .35s ease, outline-color .35s ease;
@@ -220,7 +332,24 @@ body[data-page="home"] .vision-finale h2 .home-motion-word {
   translate: none !important;
 }
 
+.home-motion-paused .home-magnetic-button {
+  translate: none !important;
+}
+
 @media (hover: hover) and (pointer: fine) {
+  .home-motion-on .home-card-light {
+    display: block;
+  }
+
+  .home-motion-on .home-motion-card:hover > .home-card-light {
+    opacity: 1;
+  }
+
+  .home-motion-on .home-magnetic-button {
+    translate: var(--magnetic-x, 0px) var(--magnetic-y, 0px);
+    transition: translate .25s ease, box-shadow .3s ease, background .3s ease;
+  }
+
   .home-motion-on .home-refreshed .home-motion-card {
     --card-lift: 0px;
     --card-x: 0deg;
@@ -286,7 +415,11 @@ body[data-page="home"] .vision-finale h2 .home-motion-word {
 
   .home-motion-glow,
   .home-motion-progress,
-  .home-motion-toggle {
+  .home-motion-toggle,
+  .home-photo-curtain,
+  .home-card-light,
+  .home-motion-divider,
+  .home-portrait-trace {
     display: none !important;
   }
 

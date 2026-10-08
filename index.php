@@ -59,8 +59,8 @@ $cities = wz_city_featured($cityCatalogue);
 require __DIR__ . '/includes/header.php';
 ?>
 <link rel="stylesheet" href="assets/css/cities.css?v=2026-10-07">
-<link rel="stylesheet" href="assets/css/home.css?v=2026-10-08">
-<link rel="stylesheet" href="assets/css/home-motion.css?v=2026-10-08-1">
+<link rel="stylesheet" href="assets/css/home.css?v=2026-10-08-2">
+<link rel="stylesheet" href="assets/css/home-motion.css?v=2026-10-08-2">
 <noscript><style>.vision-preloader{display:none}</style></noscript>
 
 <main class="vision-home home-refreshed">

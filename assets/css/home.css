@@ -206,6 +206,7 @@ body[data-page="home"] {
 
 .home-steps-head > p,
 .home-refreshed .vision-section-head > p {
+  grid-column: auto;
   max-width: 370px;
   margin: 0;
   font-size: 15px;

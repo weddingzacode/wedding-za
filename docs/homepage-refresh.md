@@ -37,7 +37,7 @@ Photo sources are recorded in `home-photo-credits.md`.
 
 Run the pinned `scripts/apply-homepage-refresh.php` from `~/public_html` after
 the header and city releases. It embeds 30 runtime files and the exact deployed
-baselines, including the earlier homepage release. It validates every
+baselines, including the earlier homepage and first animation releases. It validates every
 destination and payload, then backs up originals
 privately outside the web root, stages all replacements and publishes them by
 rename. Unknown edits, unsafe paths or damaged payloads stop before publication.
@@ -63,5 +63,5 @@ browser suite also retains the shared navigation and 50-city discovery checks.
 
 Earlier header, city and policy installers are immutable release snapshots.
 Their QA validates and exercises those snapshots. Homepage installer QA checks
-the current homepage source, its deployed header baseline and the earlier
-homepage release.
+the current homepage source, its deployed header baseline, the earlier
+homepage release and the first animation release.

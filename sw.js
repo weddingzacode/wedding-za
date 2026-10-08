@@ -1,4 +1,4 @@
-const WZ_CACHE = 'wedding-za-shell-v10';
+const WZ_CACHE = 'wedding-za-shell-v11';
 
 const SHELL = [
   './offline.html',
@@ -7,11 +7,11 @@ const SHELL = [
   './assets/css/marketplace.css?v=1.0.0',
   './assets/css/final-polish.css?v=1.0.0',
   './assets/css/header.css?v=2026-10-08',
-  './assets/css/home.css?v=2026-10-08',
-  './assets/css/home-motion.css?v=2026-10-08-1',
+  './assets/css/home.css?v=2026-10-08-2',
+  './assets/css/home-motion.css?v=2026-10-08-2',
   './assets/js/app.js?v=4.1.1',
   './assets/js/vision.js?v=4.0.7',
-  './assets/js/home-motion.js?v=2026-10-08-1',
+  './assets/js/home-motion.js?v=2026-10-08-2',
   './assets/js/lib/gsap-3.15.0.min.js',
   './assets/js/lib/ScrollTrigger-3.15.0.min.js',
   './assets/js/lib/lenis-1.3.26.min.js',
