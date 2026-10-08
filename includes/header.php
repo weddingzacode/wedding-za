@@ -448,6 +448,10 @@ if (wz_is_logged_in()) {
                 <div class="vision-menu-account-nav">
                     <small>YOUR SPACE</small>
 
+                    <a href="search.php">
+                        Search
+                    </a>
+
                     <a href="planner.php">
                         Planning studio
                     </a>
