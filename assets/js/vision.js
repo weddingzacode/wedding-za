@@ -47,6 +47,9 @@
     updateFields();
   }
   function smoothScroll() {
+    if ($('.home-refreshed')) {
+      return;
+    }
     if(reduce || typeof Lenis==='undefined')return;
     const lenis=new Lenis( {
       duration:.65,smoothWheel:true,wheelMultiplier:1,touchMultiplier:1.05
@@ -68,6 +71,9 @@
     window.WZ_LENIS=lenis;
   }
   function animate() {
+    if ($('.home-refreshed')) {
+      return;
+    }
     if(reduce || typeof gsap==='undefined')return;
     if(typeof ScrollTrigger!=='undefined')gsap.registerPlugin(ScrollTrigger);
     // Search stays usable from first paint while the imagery and title settle.

@@ -54,16 +54,25 @@ function wz_home_qa_run(string $script, string $cwd): array
 }
 
 try {
-    wz_home_qa_assert(count($manifest) === 28, 'The homepage release contains exactly 28 runtime files');
+    wz_home_qa_assert(count($manifest) === 30, 'The homepage release contains exactly 30 runtime files');
     $webRoot = $fixture . '/public_html';
     foreach (['includes', 'assets/css', 'assets/js', 'assets/images', 'assets/data', 'uploads', 'storage'] as $directory) {
         mkdir($webRoot . '/' . $directory, 0700, true);
     }
     foreach ($manifest as $path => $versions) {
-        wz_home_qa_assert(count($versions) === 1, 'One verified homepage upgrade: ' . $path);
+        $hasEarlierHomepage = in_array($path, ['index.php', 'assets/js/vision.js', 'includes/footer.php', 'sw.js'], true);
+        wz_home_qa_assert(count($versions) === ($hasEarlierHomepage ? 2 : 1), 'Verified deployment baselines: ' . $path);
         $entry = $versions[0];
         $next = wz_home_qa_decode($entry['content_gzip_base64'], $entry['sha256']);
         wz_home_qa_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches current source: ' . $path);
+        foreach ($versions as $version) {
+            wz_home_qa_assert($version['sha256'] === $entry['sha256']
+                && wz_home_qa_decode($version['content_gzip_base64'], $version['sha256']) === $next,
+                'Every baseline installs the same release: ' . $path);
+            if ($version['previous_sha256'] !== null) {
+                wz_home_qa_decode($version['previous_content_gzip_base64'], $version['previous_sha256']);
+            }
+        }
         if (str_ends_with($path, '.webp')) {
             $image = getimagesizefromstring($next);
             wz_home_qa_assert($image !== false && $image[0] > 0 && $image[1] > 0, 'Photo is valid and nonempty: ' . $path);
@@ -137,6 +146,45 @@ try {
     $result = wz_home_qa_run($installer, $webRoot);
     wz_home_qa_assert($result['code'] === 0 && str_contains($result['output'], 'already installed')
         && count(glob(dirname($webRoot) . '/weddingza-homepage-backup-*')) === 1, 'Rerunning the homepage update is idempotent');
+
+    $earlierHome = $fixture . '/earlier-homepage/public_html';
+    mkdir($earlierHome, 0700, true);
+    foreach ($manifest as $path => $versions) {
+        if (in_array($path, ['assets/css/home-motion.css', 'assets/js/home-motion.js'], true)) {
+            continue;
+        }
+        if (!is_dir(dirname($earlierHome . '/' . $path))) {
+            mkdir(dirname($earlierHome . '/' . $path), 0700, true);
+        }
+        $entry = $versions[count($versions) - 1];
+        $content = count($versions) > 1
+            ? wz_home_qa_decode($entry['previous_content_gzip_base64'], $entry['previous_sha256'])
+            : wz_home_qa_decode($entry['content_gzip_base64'], $entry['sha256']);
+        file_put_contents($earlierHome . '/' . $path, $content);
+    }
+    foreach (['bootstrap.php', 'database.php'] as $path) {
+        copy($root . '/includes/' . $path, $earlierHome . '/includes/' . $path);
+    }
+    foreach ($preserved as $path => $content) {
+        if (!is_dir(dirname($earlierHome . '/' . $path))) {
+            mkdir(dirname($earlierHome . '/' . $path), 0700, true);
+        }
+        file_put_contents($earlierHome . '/' . $path, $content);
+    }
+    $result = wz_home_qa_run($installer, $earlierHome);
+    wz_home_qa_assert($result['code'] === 0, 'The earlier homepage release upgrades to motion: ' . $result['error']);
+    foreach ($manifest as $path => $versions) {
+        wz_home_qa_assert(hash_file('sha256', $earlierHome . '/' . $path) === $versions[0]['sha256'], 'Earlier homepage upgraded: ' . $path);
+    }
+    foreach ($preserved as $path => $content) {
+        wz_home_qa_assert(file_get_contents($earlierHome . '/' . $path) === $content, 'Owner content survives the motion upgrade: ' . $path);
+    }
+    $earlierBackups = glob(dirname($earlierHome) . '/weddingza-homepage-backup-*');
+    wz_home_qa_assert(count($earlierBackups) === 1 && (fileperms($earlierBackups[0]) & 0777) === 0700,
+        'Motion upgrade backs up the earlier homepage privately');
+    $result = wz_home_qa_run($installer, $earlierHome);
+    wz_home_qa_assert($result['code'] === 0 && str_contains($result['output'], 'already installed')
+        && count(glob(dirname($earlierHome) . '/weddingza-homepage-backup-*')) === 1, 'The motion upgrade is also idempotent');
 
     require $root . '/includes/home-content.php';
     $ownerEvent = ['id' => 'birthday', 'name' => 'Owner celebration', 'image' => 'uploads/owner.jpg'];

@@ -1,0 +1,296 @@
+/* The homepage motion controller enables effects only when visitors allow them. */
+.home-motion-word {
+  display: inline-block;
+  white-space: nowrap;
+  transform-origin: 50% 100%;
+}
+
+.home-refreshed h1 .home-motion-word,
+.home-refreshed h2 .home-motion-word,
+body[data-page="home"] .vision-finale h2 .home-motion-word {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+}
+
+.home-motion-on .vision-hero {
+  isolation: isolate;
+}
+
+.home-motion-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 14% 45%, rgba(236, 194, 161, .14), transparent 48%),
+    radial-gradient(ellipse at 80% 15%, rgba(182, 112, 132, .13), transparent 48%);
+}
+
+.home-motion-on .home-motion-glow {
+  opacity: 1;
+  animation: home-glow 7s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+
+.home-motion-on .motion-visible .home-motion-glow {
+  animation-play-state: running;
+}
+
+.home-motion-on .home-hero-portrait img {
+  animation: home-portrait-float 6s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+
+.home-motion-on .motion-visible .home-hero-portrait img {
+  animation-play-state: running;
+}
+
+.home-motion-on.home-motion-hidden .home-motion-glow,
+.home-motion-on.home-motion-hidden .home-hero-portrait img {
+  animation-play-state: paused;
+}
+
+.home-motion-on .hero-plan-dock {
+  outline: 1px solid rgba(255, 255, 255, .18);
+  transition: box-shadow .35s ease, outline-color .35s ease;
+}
+
+.home-motion-on .hero-plan-dock:focus-within {
+  outline-color: rgba(229, 186, 175, .8);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, .28), 0 0 0 4px rgba(229, 186, 175, .12);
+}
+
+.home-motion-on .hero-plan-dock > button,
+.home-motion-on .city-action,
+.home-motion-on .home-help-actions a,
+.home-motion-on .vision-finale a {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.home-motion-on .hero-plan-dock > button::after,
+.home-motion-on .city-action::after,
+.home-motion-on .home-help-actions a::after,
+.home-motion-on .vision-finale a::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .23) 48%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform .65s ease;
+}
+
+.home-motion-on .hero-plan-dock > button:is(:hover, :focus-visible)::after,
+.home-motion-on .city-action:is(:hover, :focus-visible)::after,
+.home-motion-on .home-help-actions a:is(:hover, :focus-visible)::after,
+.home-motion-on .vision-finale a:is(:hover, :focus-visible)::after {
+  transform: translateX(120%);
+}
+
+.home-motion-on .hero-plan-dock > button > span,
+.home-motion-on .city-action > span,
+.home-motion-on .vision-section-action a > span,
+.home-motion-on .home-step-grid a > span,
+.home-motion-on .home-help-actions a > span,
+.home-motion-on .vision-secondary > span,
+.home-motion-on .vision-category-copy b > span,
+.home-motion-on .vision-real-overlay b > span {
+  display: inline-block;
+  transition: transform .3s ease;
+}
+
+.home-motion-on .hero-plan-dock > button:hover > span,
+.home-motion-on .city-action:hover > span,
+.home-motion-on .vision-section-action a:hover > span,
+.home-motion-on .home-step-grid a:hover > span,
+.home-motion-on .home-help-actions a:hover > span,
+.home-motion-on .vision-secondary:hover > span,
+.home-motion-on .vision-category-panel:hover .vision-category-copy b > span,
+.home-motion-on .vision-real-panel:hover .vision-real-overlay b > span {
+  transform: translate(3px, -3px);
+}
+
+.home-motion-on .home-refreshed .vision-category-copy b,
+.home-motion-on .home-refreshed .vision-city-card b {
+  max-width: 100%;
+}
+
+.home-motion-on .home-step-grid li {
+  position: relative;
+}
+
+.home-motion-on .home-step-grid li::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--v-wine);
+  transform: scaleX(var(--step-line, 0));
+  transform-origin: left;
+}
+
+.home-motion-on .home-step-number {
+  transition: background .3s ease, color .3s ease, border-color .3s ease;
+}
+
+.home-motion-on .home-step-grid li:is(:hover, :focus-within) .home-step-number {
+  background: var(--v-wine);
+  border-color: var(--v-wine);
+  color: #fffdf8;
+}
+
+.home-motion-on .vision-section-head h2 em,
+.home-motion-on .home-steps h2 em {
+  position: relative;
+}
+
+.home-motion-on .vision-section-head h2 em::after,
+.home-motion-on .home-steps h2 em::after {
+  content: "";
+  position: absolute;
+  bottom: -.05em;
+  left: 0;
+  width: 72%;
+  height: 1px;
+  background: currentColor;
+  opacity: .4;
+  transform: scaleX(var(--heading-line, 0));
+  transform-origin: left;
+}
+
+.home-motion-progress {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 10020;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #7b203b, #b97287, #d7ad85);
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.home-motion-toggle {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 120;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid rgba(99, 89, 80, .22);
+  border-radius: 999px;
+  background: #fffdf8;
+  color: #661d31;
+  box-shadow: 0 6px 22px rgba(23, 18, 15, .12);
+  font: 600 12px/1.5 var(--v-sans);
+  cursor: pointer;
+}
+
+.home-motion-toggle:focus-visible {
+  outline: 2px solid #7b203b;
+  outline-offset: 4px;
+}
+
+.home-motion-toggle[hidden],
+.home-motion-progress[hidden] {
+  display: none !important;
+}
+
+.home-motion-paused .home-refreshed *,
+.home-motion-paused .home-refreshed *::before,
+.home-motion-paused .home-refreshed *::after,
+.home-motion-paused .vision-finale * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.home-motion-paused .home-refreshed .home-motion-card,
+.home-motion-paused .home-refreshed .home-motion-card img,
+.home-motion-paused .hero-plan-dock > button > span {
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .home-motion-on .home-refreshed .home-motion-card {
+    --card-lift: 0px;
+    --card-x: 0deg;
+    --card-y: 0deg;
+    transform: perspective(1000px) translateY(var(--card-lift)) rotateX(var(--card-x)) rotateY(var(--card-y)) !important;
+    transform-origin: center;
+    transition: transform .28s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+
+  .home-motion-on .home-refreshed .home-motion-card:hover {
+    --card-lift: -5px;
+    box-shadow: 0 22px 48px rgba(23, 18, 15, .2);
+  }
+
+  .home-motion-on .home-motion-card img {
+    scale: 1;
+    transition: scale .65s ease, filter .65s ease;
+  }
+
+  .home-motion-on .home-motion-card:hover img {
+    scale: 1.035;
+    filter: saturate(1.07);
+  }
+}
+
+@keyframes home-glow {
+  from {
+    opacity: .5;
+    transform: translateX(-2%) scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(2%) scale(1.04);
+  }
+}
+
+@keyframes home-portrait-float {
+  from {
+    translate: 0 -5px;
+  }
+  to {
+    translate: 0 5px;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-motion-glow {
+    display: none;
+  }
+
+  .home-motion-toggle {
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    padding: 9px 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-motion-word {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .home-motion-glow,
+  .home-motion-progress,
+  .home-motion-toggle {
+    display: none !important;
+  }
+
+  .home-motion-on .home-refreshed .home-motion-card {
+    transform: none !important;
+  }
+}

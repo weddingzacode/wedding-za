@@ -164,7 +164,10 @@ window.WZ_BOOT = <?= json_encode([
 <script src="assets/js/lib/ScrollTrigger-3.15.0.min.js"></script>
 <script src="assets/js/lib/lenis-1.3.26.min.js"></script>
 <script src="assets/js/app.js?v=4.1.1"></script>
-<script src="assets/js/vision.js?v=4.0.6"></script>
+<script src="assets/js/vision.js?v=4.0.7"></script>
+<?php if ($pageKey === 'home'): ?>
+    <script src="assets/js/home-motion.js?v=2026-10-08-1"></script>
+<?php endif; ?>
 <script src="assets/js/marketplace.js?v=1.0.0"></script>
 <script>
 if ('serviceWorker' in navigator) {

@@ -59,6 +59,8 @@ jobs:
         run: |
           node --check assets/js/app.js
           node --check assets/js/vision.js
+          node --check assets/js/home-motion.js
+          node --check sw.js
 
       - name: Validate JSON
         run: |
@@ -222,4 +224,5 @@ jobs:
             test-results/home-*/homepage-events.png
             test-results/home-*/homepage-stories.png
             test-results/home-*/homepage-overview.png
+            test-results/home-motion-*/homepage-motion-hover.png
           retention-days: 7
