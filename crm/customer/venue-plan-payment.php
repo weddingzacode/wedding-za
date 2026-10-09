@@ -140,7 +140,15 @@ require dirname(__DIR__) . '/includes/header.php';
                 <strong>Pay securely with Razorpay</strong>
 
                 <p>
-                    Your payment is created server-side and verified before Weddingza marks the plan as paid.
+                    This is a one-time assistance fee, separate from any venue booking payment.
+                </p>
+
+                <p class="crm-kpi-note">
+                    Before paying, review our
+                    <a href="<?= h(wz_app_url('terms.php')) ?>">Terms</a>,
+                    <a href="<?= h(wz_app_url('privacy.php')) ?>">Privacy Policy</a> and
+                    <a href="<?= h(wz_app_url('cancellation.php')) ?>">Cancellation &amp; Refund Policy</a>.
+                    You can receive a full refund before assistance starts.
                 </p>
 
                 <div
@@ -162,10 +170,10 @@ require dirname(__DIR__) . '/includes/header.php';
                     Purchase #<?= h((string)($purchase['id'] ?? $purchaseId ?? '')) ?>
                 </small>
             <?php else: ?>
-                <strong>Payment setup required</strong>
+                <strong>Online payment is currently unavailable</strong>
 
                 <p>
-                    The checkout flow is ready, but Razorpay keys have not been added to this environment yet.
+                    Contact Weddingza support for help with venue assistance. Online checkout will be available once payments are enabled.
                 </p>
 
                 <button
@@ -177,7 +185,7 @@ require dirname(__DIR__) . '/includes/header.php';
                 </button>
 
                 <small class="crm-kpi-note">
-                    Add Razorpay credentials to <code>config.local.php</code> or the supported environment variables to enable payment.
+                    Read our <a href="<?= h(wz_app_url('cancellation.php')) ?>">Cancellation &amp; Refund Policy</a> before purchasing assistance.
                 </small>
             <?php endif; ?>
         </div>

@@ -113,8 +113,6 @@ test('header exposes account actions responsively', async ({ page }, testInfo) =
   const login = page.locator('.vision-auth-login');
   const signup = page.locator('.vision-auth-signup');
 
-  await expect(signup).toBeVisible();
-
   await expect(signup).toHaveAttribute(
     'href',
     'register.php?role=host'
@@ -126,9 +124,16 @@ test('header exposes account actions responsively', async ({ page }, testInfo) =
   );
 
   if (testInfo.project.name === 'desktop-chromium') {
+    await expect(signup).toBeVisible();
     await expect(login).toBeVisible();
   } else {
+    await expect(signup).toBeHidden();
     await expect(login).toBeHidden();
+    await expect(page.locator('#preloader')).toBeHidden();
+    await page.getByRole('button', { name: 'Open menu' }).click();
+    await expect(page.locator('.vision-menu-signup')).toBeVisible();
+    await expect(page.locator('.vision-menu-signup')).toHaveAttribute('href', 'register.php?role=host');
+    await expect(page.locator('.vision-menu-login')).toBeVisible();
   }
 });
 

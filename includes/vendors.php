@@ -410,8 +410,21 @@ function wz_public_vendors(): array
             $databaseVendor = $databaseByName[$key];
 
             $databaseVendor['id'] = $staticVendor['id'];
-            $databaseVendor['rating'] = $staticVendor['rating'] ?? 0;
-            $databaseVendor['reviews'] = $staticVendor['reviews'] ?? 0;
+            if ((int)($databaseVendor['reviews'] ?? 0) === 0
+                && (int)($staticVendor['reviews'] ?? 0) > 0
+            ) {
+                $databaseVendor['rating'] = $staticVendor['rating'];
+                $databaseVendor['reviews'] = $staticVendor['reviews'];
+            }
+
+            // Supplement fields not stored by the CRM; published CRM values stay authoritative.
+            foreach (['photos', 'event_spaces', 'address', 'location_notes', 'stay_description', 'venue_priority'] as $detail) {
+                if (!array_key_exists($detail, $databaseVendor)
+                    && array_key_exists($detail, $staticVendor)
+                ) {
+                    $databaseVendor[$detail] = $staticVendor[$detail];
+                }
+            }
             $databaseVendor['services'] = array_values(
                 array_unique(
                     array_merge(

@@ -6,6 +6,7 @@ storage/*.csv
 
 # Environment / secrets
 config.local.php
+includes/policy-details.local.php
 .env
 .env.*
 !.env.example
@@ -28,6 +29,8 @@ tmp/
 # Dependencies if added later
 /vendor/
 /node_modules/
+/test-results/
+/playwright-report/
 
 # Build / archive outputs
 *.zip

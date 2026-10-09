@@ -14,8 +14,7 @@
     <?php
         if (!$last && !empty($item[1])):
     ?>
-        <a href="<?=h($item[1])?>
-        ">
+    <a href="<?= h($item[1]) ?>">
         <?= h($item[0]) ?>
         </a>
         <span>
@@ -38,32 +37,29 @@
     }
     function wz_vendor_card(array $v, string $class=''): void {
 ?>
-<article class="vendor-card vision-vendor-card <?=h($class)?>
-    " data-vendor-id="
-    <?= h($v['id']) ?>
-    " data-city="
-    <?= h($v['city']??'') ?>
-    " data-category="
-    <?= h($v['category']??'') ?>
-    " data-events="
-    <?= h(implode('|',$v['events']??[])) ?>
-    " data-rating="
-    <?= h((string)($v['rating']??0)) ?>
-    " data-price="
-    <?= h((string)wz_money_number((string)($v['price']??'0'))) ?>
-    " data-search="
-    <?= h(($v['name']??'').' '.($v['city']??'').' '.($v['category']??'').' '.($v['locality']??'')) ?>
-    " data-business-user-id="<?= h((string)($v['database_user_id']??0)) ?>"
+<article
+    class="vendor-card vision-vendor-card <?= h($class) ?>"
+    data-vendor-id="<?= h($v['id']) ?>"
+    data-city="<?= h($v['city'] ?? '') ?>"
+    data-category="<?= h($v['category'] ?? '') ?>"
+    data-events="<?= h(implode('|', $v['events'] ?? [])) ?>"
+    data-rating="<?= h((string)($v['rating'] ?? 0)) ?>"
+    data-price="<?= h((string)wz_money_number((string)($v['price'] ?? '0'))) ?>"
+    data-search="<?= h(($v['name'] ?? '') . ' ' . ($v['city'] ?? '') . ' ' . ($v['category'] ?? '') . ' ' . ($v['locality'] ?? '')) ?>"
+    data-business-user-id="<?= h((string)($v['database_user_id'] ?? 0)) ?>"
     data-business-type="<?= h((string)($v['business_type']??'')) ?>"
+>
+    <a
+        class="vendor-media"
+        href="vendor.php?id=<?= urlencode((string)$v['id']) ?>"
+        aria-label="Open <?= h($v['name']) ?>"
     >
-    <a class="vendor-media" href="vendor.php?id=<?=urlencode((string)$v['id'])?>
-    " aria-label="Open
-    <?= h($v['name']) ?>
-    ">
-    <img src="<?=h($v['image'])?>
-    " alt="
-    <?= h($v['name']) ?>
-    " loading="lazy" decoding="async">
+    <img
+        src="<?= h($v['image']) ?>"
+        alt="<?= h($v['name']) ?>"
+        loading="lazy"
+        decoding="async"
+    >
     <span class="vendor-image-wash">
     </span>
     <span class="vendor-open">
@@ -72,12 +68,15 @@
     profile ↗
     </span>
     </a>
-    <button class="heart-btn" type="button" data-shortlist="<?=h($v['id'])?>
-    " data-business-user-id="<?= h((string)($v['database_user_id']??0)) ?>"
-    data-business-type="<?= h((string)($v['business_type']??'')) ?>"
-    aria-label="Save
-    <?= h($v['name']) ?>
-    ">♡
+    <button
+        class="heart-btn"
+        type="button"
+        data-shortlist="<?= h($v['id']) ?>"
+        data-business-user-id="<?= h((string)($v['database_user_id'] ?? 0)) ?>"
+        data-business-type="<?= h((string)($v['business_type'] ?? '')) ?>"
+        aria-label="Save <?= h($v['name']) ?>"
+    >
+        ♡
     </button>
     <?php if (
         ($v['business_type']??'')==='venue'
@@ -101,13 +100,15 @@
             <?= h($v['city']) ?>
             </span>
             <span>
-            ★
-            <?= h((string)$v['rating']) ?>
+            <?php if ((int)($v['reviews'] ?? 0) > 0): ?>
+                ★ <?= h((string)$v['rating']) ?>
+            <?php else: ?>
+                New listing
+            <?php endif; ?>
             </span>
         </div>
         <h3>
-        <a href="vendor.php?id=<?=urlencode((string)$v['id'])?>
-        ">
+        <a href="vendor.php?id=<?= urlencode((string)$v['id']) ?>">
         <?= h($v['name']) ?>
         </a>
         </h3>
@@ -126,10 +127,10 @@
     function wz_wedding_card(array $w, string $class=''): void {
     $eventType=(string)($w['event_type']??'Wedding');
 ?>
-<a class="story-card vision-story-card <?=h($class)?>
-" href="wedding-story.php?id=
-<?= urlencode((string)$w['id']) ?>
-">
+<a
+    class="story-card vision-story-card <?= h($class) ?>"
+    href="wedding-story.php?id=<?= urlencode((string)$w['id']) ?>"
+>
 <div class="story-media">
     <img src="<?=h($w['image'])?>
     " alt="
@@ -160,10 +161,10 @@
     }
     function wz_article_card(array $a, string $class=''): void {
 ?>
-<a class="journal-card vision-journal-card <?=h($class)?>
-" href="article.php?id=
-<?= urlencode((string)$a['id']) ?>
-">
+<a
+    class="journal-card vision-journal-card <?= h($class) ?>"
+    href="article.php?id=<?= urlencode((string)$a['id']) ?>"
+>
 <div class="journal-media">
     <img src="<?=h($a['image'])?>
     " alt="

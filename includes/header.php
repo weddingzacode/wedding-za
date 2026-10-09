@@ -208,6 +208,23 @@ if (wz_is_logged_in()) {
         rel="stylesheet"
         href="assets/css/final-polish.css?v=1.0.0"
     >
+
+    <link rel="stylesheet" href="assets/css/header.css?v=2026-10-08">
+
+    <noscript>
+        <style>
+            .vision-preloader { display: none; }
+            #siteHeader .vision-nav { display: flex; flex-wrap: wrap; height: auto; padding: 12px; gap: 8px 18px; }
+            #siteHeader .vision-nav-actions { margin-left: auto; }
+            #siteHeader .vision-menu-btn { display: none; }
+            #siteHeader .vision-nav-links { display: flex; order: 3; width: 100%; justify-content: flex-start; gap: 18px; overflow-x: auto; }
+            #siteHeader .vision-nav-links a { padding: 8px 0; }
+        </style>
+    </noscript>
+
+    <?php if (in_array($pageKey, ['privacy', 'terms', 'cancellation'], true)): ?>
+        <link rel="stylesheet" href="assets/css/policies.css?v=2026-10-07">
+    <?php endif; ?>
 </head>
 
 <body
@@ -257,7 +274,7 @@ if (wz_is_logged_in()) {
                 href="index.php"
                 aria-label="Wedding Za home"
             >
-                <span>W</span>
+                <img class="wz-brand-mark" src="assets/images/weddingza-mark.svg" width="44" height="44" alt="" aria-hidden="true">
                 <b>Wedding Za</b>
             </a>
 
@@ -284,33 +301,36 @@ if (wz_is_logged_in()) {
                 <a<?= wz_active('blog.php') ?> href="blog.php">
                     Journal
                 </a>
+
+                <a<?= wz_active('contact.php') ?> href="contact.php">
+                    Contact
+                </a>
             </nav>
 
             <div class="vision-nav-actions">
                 <a
-                    class="vision-heart"
+                    class="vision-heart vision-search"
                     href="search.php"
                     aria-label="Search Wedding Za"
                 >
-                    ⌕
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>
                 </a>
 
-                <button
+                <a
                     class="vision-discover"
-                    type="button"
-                    data-discovery-open
+                    href="planner.php"
                 >
                     Plan an event
-                    <span>↗</span>
-                </button>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg>
+                </a>
 
                 <a
-                    class="vision-heart"
+                    class="vision-heart vision-shortlist"
                     href="shortlist.php"
                     aria-label="Open shortlist"
                 >
-                    ♡
-                    <b id="shortlistCount">0</b>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.1 4.9a5.3 5.3 0 0 0-7.5 0l-.6.6-.6-.6a5.3 5.3 0 0 0-7.5 7.5L12 20.5l8.1-8.1a5.3 5.3 0 0 0 0-7.5Z"/></svg>
+                    <b id="shortlistCount" aria-label="Saved items">0</b>
                 </a>
 
                 <?php if (!wz_is_logged_in()): ?>
@@ -349,6 +369,7 @@ if (wz_is_logged_in()) {
                     type="button"
                     aria-expanded="false"
                     aria-controls="mobileMenu"
+                    aria-label="Open menu"
                 >
                     <span></span>
                     <span></span>
@@ -361,6 +382,7 @@ if (wz_is_logged_in()) {
         class="vision-menu"
         id="mobileMenu"
         aria-hidden="true"
+        inert
     >
         <div
             class="vision-menu-bg"
@@ -371,34 +393,39 @@ if (wz_is_logged_in()) {
             <div class="vision-menu-main">
                 <small>EXPLORE</small>
 
+                <a href="venues.php">
+                    <span aria-hidden="true">01</span>
+                    Venues
+                </a>
+
                 <a href="vendors.php">
-                    <span>01</span>
+                    <span aria-hidden="true">02</span>
                     Vendors
                 </a>
 
                 <a href="inspiration.php">
-                    <span>02</span>
+                    <span aria-hidden="true">03</span>
                     Ideas & inspiration
                 </a>
 
                 <a href="real-weddings.php">
-                    <span>03</span>
+                    <span aria-hidden="true">04</span>
                     Real celebrations
                 </a>
 
                 <a href="blog.php">
-                    <span>04</span>
+                    <span aria-hidden="true">05</span>
                     The journal
                 </a>
 
-                <a href="planner.php">
-                    <span>05</span>
-                    Planning studio
+                <a href="contact.php">
+                    <span aria-hidden="true">06</span>
+                    Contact
                 </a>
             </div>
 
             <aside class="vision-menu-side">
-                <div>
+                <div class="vision-menu-cities">
                     <small>POPULAR CITIES</small>
 
                     <a href="city.php?city=Jaipur">
@@ -418,8 +445,16 @@ if (wz_is_logged_in()) {
                     </a>
                 </div>
 
-                <div>
+                <div class="vision-menu-account-nav">
                     <small>YOUR SPACE</small>
+
+                    <a href="search.php">
+                        Search
+                    </a>
+
+                    <a href="planner.php">
+                        Planning studio
+                    </a>
 
                     <a href="shortlist.php">
                         Shortlist
@@ -429,11 +464,12 @@ if (wz_is_logged_in()) {
                         E-invites
                     </a>
 
-                    <a href="<?= h($accountUrl) ?>">
-                        <?= h($accountLabel) ?>
-                    </a>
-
                     <?php if (!wz_is_logged_in()): ?>
+                        <div class="vision-menu-auth">
+                            <a class="vision-menu-login" href="login.php?role=host">Log in</a>
+                            <a class="vision-menu-signup" href="register.php?role=host">Sign up <span aria-hidden="true">↗</span></a>
+                        </div>
+
                         <a href="login.php?role=host">
                             Customer CRM
                         </a>
@@ -444,6 +480,10 @@ if (wz_is_logged_in()) {
 
                         <a href="login.php?role=venue">
                             Venue CRM
+                        </a>
+                    <?php else: ?>
+                        <a class="vision-menu-account" href="<?= h($accountUrl) ?>">
+                            <?= h($accountLabel) ?> <span aria-hidden="true">↗</span>
                         </a>
                     <?php endif; ?>
 
@@ -502,9 +542,9 @@ if (wz_is_logged_in()) {
                             Any celebration
                         </option>
 
-                        <?php foreach (wz_data('event_types') as $event): ?>
+                        <?php foreach (wz_data('event_types') as $headerEventChoice): ?>
                             <option>
-                                <?= h($event['name']) ?>
+                                <?= h($headerEventChoice['name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -520,9 +560,9 @@ if (wz_is_logged_in()) {
                             All vendor categories
                         </option>
 
-                        <?php foreach (wz_data('categories') as $category): ?>
+                        <?php foreach (wz_data('categories') as $headerCategoryChoice): ?>
                             <option>
-                                <?= h($category['name']) ?>
+                                <?= h($headerCategoryChoice['name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -538,9 +578,9 @@ if (wz_is_logged_in()) {
                             All cities
                         </option>
 
-                        <?php foreach (wz_data('cities') as $city): ?>
+                        <?php foreach (wz_data('cities') as $headerCityChoice): ?>
                             <option>
-                                <?= h($city) ?>
+                                <?= h($headerCityChoice) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

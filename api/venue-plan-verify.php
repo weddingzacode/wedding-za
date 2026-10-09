@@ -60,7 +60,7 @@ if (
 
 $statement = $pdo->prepare(
     'UPDATE venue_plan_purchases
-     SET status = "paid",
+     SET status = CASE WHEN status = "pending" THEN "paid" ELSE status END,
          payment_provider = "razorpay",
          provider_payment_id = :provider_payment_id,
          paid_at = COALESCE(paid_at, NOW())
@@ -74,7 +74,21 @@ $statement->execute([
     'provider_order_id' => $orderId,
 ]);
 
-if ($statement->rowCount() < 1) {
+// Replayed callbacks and webhook-first delivery can legitimately update zero rows.
+$lookup = $pdo->prepare(
+    'SELECT id, status, provider_payment_id
+     FROM venue_plan_purchases
+     WHERE customer_user_id = :customer_user_id
+     AND provider_order_id = :provider_order_id
+     LIMIT 1'
+);
+$lookup->execute([
+    'customer_user_id' => $userId,
+    'provider_order_id' => $orderId,
+]);
+$purchase = $lookup->fetch();
+
+if (!$purchase) {
     http_response_code(404);
 
     echo json_encode([
@@ -82,6 +96,14 @@ if ($statement->rowCount() < 1) {
         'message' => 'Payment order was not found.',
     ]);
 
+    exit;
+}
+
+if ($statement->rowCount() < 1) {
+    echo json_encode([
+        'ok' => true,
+        'message' => 'Payment already verified.',
+    ]);
     exit;
 }
 

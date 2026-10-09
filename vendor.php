@@ -1,9 +1,9 @@
 <?php
-    require __DIR__.'/includes/bootstrap.php';
-    require __DIR__.'/includes/components.php';
-    require __DIR__.'/includes/vendors.php';
-    require __DIR__.'/includes/marketplace.php';
-    require __DIR__.'/includes/media.php';
+    require_once __DIR__ . '/includes/bootstrap.php';
+    require_once __DIR__ . '/includes/components.php';
+    require_once __DIR__ . '/includes/vendors.php';
+    require_once __DIR__ . '/includes/marketplace.php';
+    require_once __DIR__ . '/includes/media.php';
     $id=(string)($_GET['id']??'amber-courtyard');
     $v=wz_public_vendor($id)??(wz_public_vendors()[0]??null);
     if(!$v) {
@@ -128,6 +128,15 @@
         ],
     ];
 
+    if ($businessType === 'venue') {
+        require_once __DIR__ . '/includes/venue-directory.php';
+        $pageKey = 'venue';
+        require __DIR__ . '/includes/header.php';
+        require __DIR__ . '/includes/venue-profile.php';
+        require __DIR__ . '/includes/footer.php';
+        return;
+    }
+
     require __DIR__.'/includes/header.php';
     $images=$v['images']??[$v['image']];
     while(count($images)<3)$images[]=$v['image'];
@@ -165,8 +174,12 @@
                         <?= h((string)$v['reviews']) ?>
                         reviews
                     </div>
-                    <button class="pill-btn outline heart-btn-static" type="button" data-shortlist="<?=h($v['id'])?>
-                    ">♡ Save to shortlist
+                    <button
+                        class="pill-btn outline heart-btn-static"
+                        type="button"
+                        data-shortlist="<?= h($v['id']) ?>"
+                    >
+                        ♡ Save to shortlist
                     </button>
                     <?php if ($businessType==='venue'): ?>
                         <button

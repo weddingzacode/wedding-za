@@ -22,7 +22,7 @@
                 better answers.
                 </h2>
                 <p>
-                Include your city, approximate date and what you are trying to solve. This demo saves submissions locally so you can test the workflow before connecting email or a CRM.
+                Include your city, approximate date and what you need help with so our team can review your request.
                 </p>
                 <div style="margin-top:28px">
                     <p>

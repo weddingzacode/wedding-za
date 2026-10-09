@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/database.php';
 require_once __DIR__ . '/includes/content.php';
 require_once __DIR__ . '/includes/vendors.php';
+require_once __DIR__ . '/includes/cities.php';
 
 header(
     'Content-Type: application/xml; charset=utf-8'
@@ -30,10 +31,11 @@ $urls = [
     wz_app_url('invites.php'),
     wz_app_url('about.php'),
     wz_app_url('contact.php'),
+    wz_app_url('cities.php'),
     wz_app_url('register-vendor.php'),
 ];
 
-foreach (wz_data('cities') as $city) {
+foreach (array_column(wz_city_catalogue(), 'name') as $city) {
     $urls[] = wz_app_url(
         'city.php?city=' .
         urlencode($city)

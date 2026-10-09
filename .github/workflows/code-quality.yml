@@ -22,7 +22,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: pdo_mysql, fileinfo
+          extensions: pdo_mysql, fileinfo, mbstring, curl
 
       - name: Check PHP syntax
         shell: bash
@@ -31,6 +31,30 @@ jobs:
           while IFS= read -r -d '' file; do
             php -l "$file"
           done < <(find . -type f -name "*.php" -print0)
+
+      - name: Check launch security regressions
+        run: php scripts/qa-launch-security.php
+
+      - name: Check policy installer safety
+        run: php scripts/qa-policy-update.php
+
+      - name: Check city discovery at 50 cities
+        run: php scripts/qa-cities.php
+
+      - name: Check city installer safety
+        run: php scripts/qa-city-update.php
+
+      - name: Check header installer safety
+        run: php scripts/qa-header-update.php
+
+      - name: Check homepage installer safety
+        run: php scripts/qa-homepage-update.php
+
+      - name: Check venue facts and photos
+        run: php scripts/qa-venues.php
+
+      - name: Check venue installer safety
+        run: php scripts/qa-venue-update.php
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -41,6 +65,9 @@ jobs:
         run: |
           node --check assets/js/app.js
           node --check assets/js/vision.js
+          node --check assets/js/home-motion.js
+          node --check assets/js/venues.js
+          node --check sw.js
 
       - name: Validate JSON
         run: |
@@ -72,7 +99,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: pdo_mysql, fileinfo
+          extensions: pdo_mysql, fileinfo, mbstring, curl
 
       - name: Install MySQL client
         run: |
@@ -113,6 +140,9 @@ jobs:
           ];
           PHP
 
+      - name: Check application and database time zones
+        run: php scripts/qa-timezone.php
+
       - name: Run CRM integration QA
         run: |
           php scripts/qa-crm.php
@@ -134,6 +164,9 @@ jobs:
       - name: Run HTTP smoke tests
         run: |
           bash scripts/qa-smoke.sh http://127.0.0.1:8088
+
+      - name: Verify venue enquiries reach the CRM
+        run: php scripts/qa-venue-enquiries.php http://127.0.0.1:8088
 
       - name: Show PHP server log on failure
         if: failure()
@@ -157,7 +190,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: pdo_mysql, fileinfo
+          extensions: pdo_mysql, fileinfo, mbstring, curl
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -172,3 +205,35 @@ jobs:
       - name: Run browser QA
         run: |
           npm run test:e2e
+
+      - name: Save browser screenshots and failure traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-qa
+          path: test-results/
+          retention-days: 7
+
+      - name: Save header preview images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: header-previews
+          path: |
+            test-results/header-*/homepage-header.png
+            test-results/header-*/mobile-menu.png
+          retention-days: 7
+
+      - name: Save homepage preview images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-previews
+          path: |
+            test-results/home-*/homepage-hero.png
+            test-results/home-*/homepage-events.png
+            test-results/home-*/homepage-stories.png
+            test-results/home-*/homepage-overview.png
+            test-results/home-motion-*/homepage-motion-hover.png
+            test-results/home-motion-*/homepage-motion-photo-panels.png
+          retention-days: 7

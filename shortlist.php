@@ -1,6 +1,7 @@
 <?php
     require __DIR__.'/includes/bootstrap.php';
     require __DIR__.'/includes/components.php';
+    require_once __DIR__.'/includes/vendors.php';
     $pageTitle='My Shortlist';
     $pageDescription='Compare the event vendors you saved across Wedding Za and keep them connected to your event brief.';
     $pageKey='shortlist';
@@ -120,7 +121,9 @@
                 </div>
                 <div class="vendor-grid shortlist-grid-v2" id="shortlistGrid">
                     <?php
-                        foreach(wz_data('vendors') as $v)wz_vendor_card($v);
+                        foreach (wz_public_vendors() as $v) {
+                            wz_vendor_card($v);
+                        }
                     ?>
                 </div>
                 <div class="empty-state shortlist-empty-v2" id="shortlistEmpty">

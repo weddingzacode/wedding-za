@@ -1,0 +1,384 @@
+/* Shared navigation: ivory, plum and a compact celebration emblem. */
+#siteHeader,
+#siteHeader.scrolled,
+body.menu-open #siteHeader {
+  color: var(--v-ink);
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+#siteHeader .vision-nav {
+  width: min(1440px, calc(100% - 64px));
+  height: 80px;
+  margin: 16px auto 0;
+  padding: 0 22px;
+  grid-template-columns: auto 1fr auto;
+  gap: 28px;
+  background: rgba(251, 248, 243, .96);
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(30, 16, 12, .1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: auto;
+  transition: box-shadow .3s, background .3s;
+}
+
+#siteHeader.scrolled .vision-nav {
+  background: rgba(251, 248, 243, .98);
+  box-shadow: 0 8px 28px rgba(30, 16, 12, .12);
+}
+
+#siteHeader .vision-brand {
+  gap: 11px;
+  flex-shrink: 0;
+}
+
+#siteHeader .wz-brand-mark {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+#siteHeader .vision-brand b {
+  font: 400 26px/1 var(--v-serif);
+  letter-spacing: -.025em;
+  white-space: nowrap;
+}
+
+#siteHeader .vision-nav-links {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 1.7vw, 26px);
+}
+
+#siteHeader .vision-nav-links a {
+  padding: 16px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .025em;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+#siteHeader .vision-nav-links a::after {
+  bottom: 9px;
+  background: var(--v-wine);
+}
+
+#siteHeader .vision-nav-links a:hover,
+#siteHeader .vision-nav-links a.is-active {
+  color: var(--v-wine);
+}
+
+#siteHeader .vision-nav-actions {
+  gap: 8px;
+}
+
+#siteHeader .vision-heart {
+  width: 38px;
+  height: 44px;
+  justify-content: center;
+  position: relative;
+  border-radius: 12px;
+  transition: background .2s, color .2s;
+}
+
+#siteHeader .vision-heart:hover {
+  color: var(--v-wine);
+  background: rgba(127, 36, 61, .065);
+}
+
+#siteHeader .vision-heart b {
+  position: absolute;
+  right: -2px;
+  top: 1px;
+  min-width: 16px;
+  height: 16px;
+  background: var(--v-wine);
+  color: #fff;
+  border: 2px solid #fbf8f3;
+}
+
+#siteHeader .vision-heart b:empty,
+#siteHeader .vision-heart b[hidden] {
+  display: none;
+}
+
+#siteHeader .vision-discover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--v-wine);
+  border-radius: 12px;
+  background: var(--v-wine);
+  color: #fff;
+  font: 700 11px/1 var(--v-sans);
+  letter-spacing: .015em;
+  text-transform: none;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(127, 36, 61, .12);
+  transition: background .2s, transform .2s;
+}
+
+#siteHeader .vision-discover:hover {
+  background: var(--v-wine-dark);
+  transform: translateY(-1px);
+}
+
+#siteHeader .vision-discover svg {
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+
+#siteHeader .vision-discover:hover svg {
+  transform: translate(2px, -2px);
+}
+
+#siteHeader .vision-auth-cta {
+  min-height: 44px;
+  margin-left: 4px;
+  border: 0;
+  border-left: 1px solid rgba(23, 18, 15, .14);
+  padding-left: 12px;
+  border-radius: 0;
+  gap: 4px;
+  background: none;
+  backdrop-filter: none;
+  overflow: visible;
+}
+
+#siteHeader .vision-auth-cta:hover {
+  transform: none;
+}
+
+#siteHeader .vision-auth-login,
+#siteHeader .vision-auth-signup,
+#siteHeader .vision-auth-account {
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .015em;
+  text-transform: none;
+  border-radius: 12px;
+  color: var(--v-ink);
+}
+
+#siteHeader .vision-auth-signup,
+#siteHeader .vision-auth-account {
+  background: transparent;
+  border: 1px solid rgba(23, 18, 15, .2);
+  backdrop-filter: none;
+}
+
+#siteHeader .vision-auth-login:hover,
+#siteHeader .vision-auth-signup:hover,
+#siteHeader .vision-auth-account:hover {
+  color: var(--v-wine);
+  background: rgba(127, 36, 61, .055);
+}
+
+#siteHeader .vision-auth-account {
+  min-width: 0;
+  margin-left: 8px;
+}
+
+#siteHeader .vision-auth-account::before,
+#siteHeader .vision-auth-signup::before {
+  content: none;
+}
+
+#siteHeader .vision-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-color: rgba(23, 18, 15, .2);
+  border-radius: 12px;
+}
+
+#siteHeader :where(a, button):focus-visible,
+#mobileMenu a:focus-visible {
+  outline: 2px solid var(--v-wine);
+  outline-offset: 4px;
+}
+
+#mobileMenu {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#mobileMenu .vision-menu-grid {
+  padding-top: 132px;
+  padding-bottom: 36px;
+}
+
+#mobileMenu .vision-menu-main > a {
+  display: grid;
+}
+
+#mobileMenu .vision-menu-auth {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+#mobileMenu .vision-menu-auth a,
+#mobileMenu .vision-menu-account {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--v-line);
+  border-radius: 12px;
+  justify-content: center;
+  font: 700 12px var(--v-sans);
+  gap: 10px;
+}
+
+#mobileMenu .vision-menu-signup,
+#mobileMenu .vision-menu-account {
+  background: var(--v-wine);
+  color: #fff;
+  border-color: var(--v-wine);
+}
+
+@media (max-width: 1280px) {
+  #siteHeader .vision-nav {
+    width: calc(100% - 40px);
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+  }
+
+  #siteHeader .vision-nav-links {
+    display: none;
+  }
+
+  #siteHeader .vision-menu-btn {
+    display: block;
+  }
+}
+
+@media (max-width: 720px) {
+  #siteHeader .vision-nav {
+    width: calc(100% - 24px);
+    height: 66px;
+    margin-top: 12px;
+    padding: 0 12px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  #siteHeader .vision-brand {
+    gap: 8px;
+  }
+
+  #siteHeader .wz-brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  #siteHeader .vision-brand b {
+    font-size: 22px;
+  }
+
+  #siteHeader .vision-nav-actions {
+    gap: 8px;
+  }
+
+  #siteHeader .vision-heart,
+  #siteHeader .vision-auth-cta,
+  #siteHeader .vision-auth-account {
+    display: none;
+  }
+
+  #siteHeader .vision-discover {
+    min-height: 42px;
+    padding: 0 12px;
+    gap: 7px;
+    font-size: 10px;
+  }
+
+  #siteHeader .vision-menu-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  #mobileMenu .vision-menu-grid {
+    padding-top: 108px;
+    gap: 28px;
+  }
+
+  #mobileMenu .vision-menu-main small {
+    margin-bottom: 12px;
+  }
+
+  #mobileMenu .vision-menu-main > a {
+    font-size: clamp(30px, 8.8vw, 42px);
+    min-height: 50px;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+  }
+
+  #mobileMenu .vision-menu-side {
+    display: block;
+    padding: 0;
+  }
+
+  #mobileMenu .vision-menu-cities {
+    display: none;
+  }
+
+  #mobileMenu .vision-menu-account-nav {
+    gap: 8px;
+  }
+
+  #mobileMenu .vision-menu-account-nav small {
+    margin-bottom: 4px;
+  }
+}
+
+@media (max-width: 380px) {
+  #siteHeader .vision-nav {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  #siteHeader .wz-brand-mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  #siteHeader .vision-brand {
+    gap: 6px;
+  }
+
+  #siteHeader .vision-brand b {
+    font-size: 20px;
+  }
+
+  #siteHeader .vision-discover {
+    padding: 0 10px;
+  }
+
+  #siteHeader .vision-discover svg {
+    width: 12px;
+  }
+
+  #siteHeader .vision-nav-actions {
+    gap: 6px;
+  }
+
+  #siteHeader .vision-menu-btn {
+    width: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #siteHeader *,
+  #siteHeader *::after {
+    transition: none;
+  }
+}

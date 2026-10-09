@@ -30,6 +30,9 @@ Minimum launch values:
 - contact phone if used
 - default Open Graph image
 - notification delivery webhook if external email/push is enabled
+- keep `operations.allow_demo_login` set to `false`
+- client-approved privacy, terms and cancellation/refund policy text
+- reviewed real business listings and client-authorized images
 
 Never commit `config.local.php`.
 
@@ -185,9 +188,25 @@ php scripts/go-live-check.php
 returns:
 
 ```text
-READY FOR LIVE
+SERVER CONFIGURATION CHECK PASSED
 ```
 
-perform the DNS/domain cutover.
+and the real-domain smoke tests above pass, perform the DNS/domain cutover.
+The checker alone cannot verify SSL, Apache enforcement, the payment provider,
+notification delivery, or the browser experience on the actual hosting account.
+
+For a fresh GoDaddy installation, import `database/schema.sql` once rather
+than importing each migration again. Create an administrator with
+`scripts/create-admin.php` before running the launch checker.
+
+Confirm these paths return HTTP 403 or 404 over the test domain:
+
+- `/config.local.php`
+- `/database/schema.sql`
+- `/storage/leads.csv`
+- `/storage/backups/`
+
+Use a separate new database for this replacement website. Retain the old
+website backup until the new installation passes its real-domain tests.
 
 After launch, immediately re-test login, enquiry, payment webhook, notification delivery and admin access.

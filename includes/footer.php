@@ -114,7 +114,7 @@
             </a>
 
             <a href="cancellation.php">
-                Cancellation
+                Cancellation &amp; refunds
             </a>
 
             <a href="careers.php">
@@ -160,11 +160,14 @@ window.WZ_BOOT = <?= json_encode([
 ], JSON_UNESCAPED_SLASHES) ?>;
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
-<script src="assets/js/app.js?v=4.1.0"></script>
-<script src="assets/js/vision.js?v=4.0.4"></script>
+<script src="assets/js/lib/gsap-3.15.0.min.js"></script>
+<script src="assets/js/lib/ScrollTrigger-3.15.0.min.js"></script>
+<script src="assets/js/lib/lenis-1.3.26.min.js"></script>
+<script src="assets/js/app.js?v=4.1.2"></script>
+<script src="assets/js/vision.js?v=4.0.7"></script>
+<?php if ($pageKey === 'home'): ?>
+    <script src="assets/js/home-motion.js?v=2026-10-09-2"></script>
+<?php endif; ?>
 <script src="assets/js/marketplace.js?v=1.0.0"></script>
 <script>
 if ('serviceWorker' in navigator) {

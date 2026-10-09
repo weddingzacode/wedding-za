@@ -52,6 +52,10 @@ function wz_config(): array
         ],
         'operations' => [
             'health_token' => getenv('WZ_HEALTH_TOKEN') ?: '',
+            'allow_demo_login' => filter_var(
+                getenv('WZ_ALLOW_DEMO_LOGIN') ?: '0',
+                FILTER_VALIDATE_BOOLEAN
+            ),
         ],
     ];
 
@@ -113,6 +117,9 @@ function wz_db(): ?PDO
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]
         );
+
+        // Match PHP and local DATETIME fields without host time-zone tables.
+        $pdo->exec("SET time_zone = '+05:30'");
     } catch (PDOException $exception) {
         error_log('Wedding Za database connection failed: ' . $exception->getMessage());
         $pdo = null;

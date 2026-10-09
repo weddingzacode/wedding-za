@@ -19,6 +19,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+// Account data and CSRF tokens must never enter a shared HTTP cache.
+header('Cache-Control: no-store, private');
+
 function wz_client_ip(): string
 {
     return substr(
@@ -52,6 +55,11 @@ function wz_csrf_valid(?string $token): bool
 function wz_user(): ?array
 {
     $user = $_SESSION['wz_user'] ?? null;
+
+    if (is_array($user) && empty($user['id']) && !wz_demo_login_allowed()) {
+        unset($_SESSION['wz_user']);
+        return null;
+    }
 
     return is_array($user)
         ? $user
@@ -94,11 +102,38 @@ function wz_set_user_session(array $user): void
     session_regenerate_id(true);
 }
 
+function wz_demo_login_allowed(): bool
+{
+    if (
+        empty(wz_config()['operations']['allow_demo_login'])
+        || wz_db_is_configured()
+    ) {
+        return false;
+    }
+
+    $localHosts = ['localhost', '127.0.0.1', '::1', '[::1]'];
+    $host = strtolower((string)parse_url(
+        'http://' . ($_SERVER['HTTP_HOST'] ?? ''),
+        PHP_URL_HOST
+    ));
+    $configuredUrl = (string)(wz_config()['app_url'] ?? '');
+    $configuredHost = strtolower((string)parse_url($configuredUrl, PHP_URL_HOST));
+    $clientIp = (string)($_SERVER['REMOTE_ADDR'] ?? '');
+
+    return in_array($host, $localHosts, true)
+        && in_array($clientIp, ['127.0.0.1', '::1'], true)
+        && ($configuredUrl === '' || in_array($configuredHost, $localHosts, true));
+}
+
 function wz_login_demo(
     string $name,
     string $email,
     string $role = 'host'
 ): void {
+    if (!wz_demo_login_allowed()) {
+        throw new RuntimeException('Demo access is disabled.');
+    }
+
     $allowedRoles = [
         'host',
         'vendor',

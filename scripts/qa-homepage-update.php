@@ -1,0 +1,274 @@
+<?php
+
+declare(strict_types=1);
+
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
+
+$root = dirname(__DIR__);
+$installer = $root . '/scripts/apply-homepage-refresh.php';
+$installerSource = file_get_contents($installer);
+$marker = "<<<'WZ_HOME_PAYLOAD'\n";
+$start = strpos($installerSource, $marker);
+$end = $start === false ? false : strpos($installerSource, "\nWZ_HOME_PAYLOAD", $start + strlen($marker));
+if ($start === false || $end === false) {
+    throw new RuntimeException('Homepage installer payload is missing.');
+}
+$start += strlen($marker);
+$manifest = json_decode(substr($installerSource, $start, $end - $start), true, 512, JSON_THROW_ON_ERROR);
+$fixture = sys_get_temp_dir() . '/wz-home-qa-' . bin2hex(random_bytes(8));
+mkdir($fixture, 0700);
+
+function wz_home_qa_assert(bool $ok, string $message): void
+{
+    if (!$ok) {
+        throw new RuntimeException($message);
+    }
+    echo 'PASS — ' . $message . PHP_EOL;
+}
+
+function wz_home_qa_decode(string $payload, string $expectedHash): string
+{
+    $source = gzdecode(base64_decode($payload, true));
+    wz_home_qa_assert(is_string($source) && hash('sha256', $source) === $expectedHash, 'Release content has its verified hash');
+    return $source;
+}
+
+function wz_home_qa_run(string $script, string $cwd): array
+{
+    $command = [PHP_BINARY, '-n'];
+    $tokenizer = ini_get('extension_dir') . '/tokenizer.so';
+    if (is_file($tokenizer)) {
+        $command = array_merge($command, ['-d', 'extension_dir=' . ini_get('extension_dir'), '-d', 'extension=tokenizer']);
+    }
+    $command[] = $script;
+    $process = proc_open($command, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $cwd);
+    fclose($pipes[0]);
+    $output = stream_get_contents($pipes[1]);
+    $error = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    return ['code' => proc_close($process), 'output' => $output, 'error' => $error];
+}
+
+// Keep the earlier homepage installer immutable after the venue release.
+$homeSnapshots = [
+    'vendor.php' => '8feb7b697f1812e802f10d9805d9e6f101884fa99a085760f5fd3e90f4e18353',
+    'includes/components.php' => '748a626473dcafad8987736f2c0df530810fbe0d8ee2185b0487a848e7432082',
+    'sw.js' => '641fe63a0bab61a10265091d6f680a06729668a0205b477c156add4953f4971b',
+];
+
+try {
+    wz_home_qa_assert(count($manifest) === 34, 'The homepage release contains exactly 34 runtime files');
+    $webRoot = $fixture . '/public_html';
+    foreach (['includes', 'assets/css', 'assets/js', 'assets/images', 'assets/data', 'uploads', 'storage'] as $directory) {
+        mkdir($webRoot . '/' . $directory, 0700, true);
+    }
+    foreach ($manifest as $path => $versions) {
+        $baselineCounts = [
+            'index.php' => 4,
+            'includes/footer.php' => 6,
+            'sw.js' => 6,
+            'assets/js/vision.js' => 2,
+            'assets/css/home-motion.css' => 3,
+            'assets/js/home-motion.js' => 4,
+            'assets/css/home.css' => 2,
+        ];
+        wz_home_qa_assert(count($versions) === ($baselineCounts[$path] ?? 1), 'Verified deployment baselines: ' . $path);
+        $entry = $versions[0];
+        $next = wz_home_qa_decode($entry['content_gzip_base64'], $entry['sha256']);
+        $sourceHash = $homeSnapshots[$path] ?? hash_file('sha256', $root . '/' . $path);
+        wz_home_qa_assert($sourceHash === $entry['sha256'], 'Installer matches its release snapshot: ' . $path);
+        foreach ($versions as $version) {
+            wz_home_qa_assert($version['sha256'] === $entry['sha256']
+                && wz_home_qa_decode($version['content_gzip_base64'], $version['sha256']) === $next,
+                'Every baseline installs the same release: ' . $path);
+            if ($version['previous_sha256'] !== null) {
+                wz_home_qa_decode($version['previous_content_gzip_base64'], $version['previous_sha256']);
+            }
+        }
+        if (str_ends_with($path, '.webp')) {
+            $image = getimagesizefromstring($next);
+            wz_home_qa_assert($image !== false && $image[0] > 0 && $image[1] > 0, 'Photo is valid and nonempty: ' . $path);
+        }
+        if ($entry['previous_sha256'] !== null) {
+            file_put_contents($webRoot . '/' . $path, wz_home_qa_decode($entry['previous_content_gzip_base64'], $entry['previous_sha256']));
+        }
+    }
+    foreach (['bootstrap.php', 'database.php'] as $path) {
+        copy($root . '/includes/' . $path, $webRoot . '/includes/' . $path);
+    }
+    $preserved = [
+        'config.local.php' => "<?php return ['database' => ['password' => 'private-fixture-secret']];\n",
+        'includes/policy-details.local.php' => "<?php return ['operator_name' => 'Owner Business'];\n",
+        'assets/data/site.json' => '{"cities":["Owner City"],"event_types":[{"image":"uploads/owner.jpg"}]}',
+        'privacy.php' => 'Owner privacy policy',
+        'terms.php' => 'Owner terms',
+        'cancellation.php' => 'Owner cancellation policy',
+        'uploads/owner.jpg' => 'Owner uploaded photo',
+        'storage/owner-data.json' => 'Owner planning data',
+    ];
+    foreach ($preserved as $path => $content) {
+        file_put_contents($webRoot . '/' . $path, $content);
+    }
+    $originals = [];
+    foreach ($manifest as $path => $versions) {
+        $originals[$path] = is_file($webRoot . '/' . $path) ? file_get_contents($webRoot . '/' . $path) : null;
+    }
+
+    $customIndex = $originals['index.php'] . "\n<!-- Owner customization -->\n";
+    file_put_contents($webRoot . '/index.php', $customIndex);
+    $result = wz_home_qa_run($installer, $webRoot);
+    wz_home_qa_assert($result['code'] === 1 && str_contains($result['error'], 'local edits'), 'Unknown local edits stop the update');
+    wz_home_qa_assert(file_get_contents($webRoot . '/index.php') === $customIndex
+        && file_get_contents($webRoot . '/includes/footer.php') === $originals['includes/footer.php']
+        && !file_exists($webRoot . '/assets/css/home.css'), 'A rejected update changes no website files');
+    file_put_contents($webRoot . '/index.php', $originals['index.php']);
+
+    $outside = $fixture . '/outside-photo.webp';
+    file_put_contents($outside, 'Do not overwrite');
+    symlink($outside, $webRoot . '/assets/images/home-birthday.webp');
+    $result = wz_home_qa_run($installer, $webRoot);
+    wz_home_qa_assert($result['code'] === 1 && str_contains($result['error'], 'Unsafe')
+        && file_get_contents($outside) === 'Do not overwrite'
+        && !file_exists($webRoot . '/assets/css/home.css'), 'Symlink destinations are refused before publication');
+    unlink($webRoot . '/assets/images/home-birthday.webp');
+
+    $corrupt = $fixture . '/corrupt-installer.php';
+    $corruptSource = str_replace($manifest['index.php'][0]['sha256'], str_repeat('0', 64), file_get_contents($installer));
+    file_put_contents($corrupt, $corruptSource);
+    $result = wz_home_qa_run($corrupt, $webRoot);
+    wz_home_qa_assert($result['code'] === 1 && str_contains($result['error'], 'Invalid payload')
+        && file_get_contents($webRoot . '/index.php') === $originals['index.php'], 'Corrupt release content stops before any replacement');
+
+    $result = wz_home_qa_run($installer, $webRoot);
+    wz_home_qa_assert($result['code'] === 0, 'The installed header release upgrades: ' . $result['error']);
+    foreach ($manifest as $path => $versions) {
+        wz_home_qa_assert(hash_file('sha256', $webRoot . '/' . $path) === $versions[0]['sha256'], 'Installed file verified: ' . $path);
+    }
+    foreach ($preserved as $path => $content) {
+        wz_home_qa_assert(file_get_contents($webRoot . '/' . $path) === $content, 'Owner content preserved: ' . $path);
+    }
+    $backups = glob(dirname($webRoot) . '/weddingza-homepage-backup-*');
+    wz_home_qa_assert(count($backups) === 1 && (fileperms($backups[0]) & 0777) === 0700, 'The backup stays private outside public_html');
+    foreach ($originals as $path => $content) {
+        if ($content !== null) {
+            wz_home_qa_assert(file_get_contents($backups[0] . '/' . $path) === $content
+                && (fileperms($backups[0] . '/' . $path) & 0777) === 0600, 'Original file is privately recoverable: ' . $path);
+        }
+    }
+    $result = wz_home_qa_run($installer, $webRoot);
+    wz_home_qa_assert($result['code'] === 0 && str_contains($result['output'], 'already installed')
+        && count(glob(dirname($webRoot) . '/weddingza-homepage-backup-*')) === 1, 'Rerunning the homepage update is idempotent');
+
+    $upgradeRoutes = [
+        'earlier-homepage' => [
+            'index.php' => 1,
+            'includes/footer.php' => 1,
+            'sw.js' => 1,
+            'assets/js/vision.js' => 1,
+            'assets/css/home.css' => 1,
+        ],
+        'first-motion' => [
+            'index.php' => 2,
+            'includes/footer.php' => 2,
+            'sw.js' => 2,
+            'assets/css/home-motion.css' => 1,
+            'assets/js/home-motion.js' => 1,
+            'assets/css/home.css' => 1,
+        ],
+        'second-motion' => [
+            'index.php' => 3,
+            'includes/footer.php' => 3,
+            'sw.js' => 3,
+            'assets/css/home-motion.css' => 2,
+            'assets/js/home-motion.js' => 2,
+        ],
+        'back-scroll' => [
+            'index.php' => 3,
+            'includes/footer.php' => 4,
+            'sw.js' => 4,
+            'assets/css/home-motion.css' => 2,
+            'assets/js/home-motion.js' => 3,
+        ],
+        'no-pause-button' => [
+            'includes/footer.php' => 5,
+            'sw.js' => 5,
+        ],
+    ];
+    foreach ($upgradeRoutes as $route => $baselineIndexes) {
+        $baselineIndexes += [
+            'includes/components.php' => 0,
+            'includes/header.php' => 0,
+            'vendor.php' => 0,
+            'assets/js/app.js' => 0,
+        ];
+        $earlierHome = $fixture . '/' . $route . '/public_html';
+        mkdir($earlierHome, 0700, true);
+        foreach ($manifest as $path => $versions) {
+            if ($route === 'earlier-homepage' && in_array($path, ['assets/css/home-motion.css', 'assets/js/home-motion.js'], true)) {
+                continue;
+            }
+            if (!is_dir(dirname($earlierHome . '/' . $path))) {
+                mkdir(dirname($earlierHome . '/' . $path), 0700, true);
+            }
+            $entry = $versions[$baselineIndexes[$path] ?? 0];
+            $content = array_key_exists($path, $baselineIndexes)
+                ? wz_home_qa_decode($entry['previous_content_gzip_base64'], $entry['previous_sha256'])
+                : wz_home_qa_decode($entry['content_gzip_base64'], $entry['sha256']);
+            file_put_contents($earlierHome . '/' . $path, $content);
+        }
+        foreach (['bootstrap.php', 'database.php'] as $path) {
+            copy($root . '/includes/' . $path, $earlierHome . '/includes/' . $path);
+        }
+        foreach ($preserved as $path => $content) {
+            if (!is_dir(dirname($earlierHome . '/' . $path))) {
+                mkdir(dirname($earlierHome . '/' . $path), 0700, true);
+            }
+            file_put_contents($earlierHome . '/' . $path, $content);
+        }
+        if ($route === 'first-motion') {
+            $cssPath = $earlierHome . '/assets/css/home-motion.css';
+            $originalCss = file_get_contents($cssPath);
+            $customCss = $originalCss . "\n/* Owner animation customization */\n";
+            file_put_contents($cssPath, $customCss);
+            $beforeIndex = file_get_contents($earlierHome . '/index.php');
+            $result = wz_home_qa_run($installer, $earlierHome);
+            wz_home_qa_assert($result['code'] === 1 && str_contains($result['error'], 'local edits')
+                && file_get_contents($cssPath) === $customCss
+                && file_get_contents($earlierHome . '/index.php') === $beforeIndex,
+                'Custom animation edits stop before any replacement');
+            file_put_contents($cssPath, $originalCss);
+        }
+        $result = wz_home_qa_run($installer, $earlierHome);
+        wz_home_qa_assert($result['code'] === 0, 'Upgrade works from ' . $route . ': ' . $result['error']);
+        foreach ($manifest as $path => $versions) {
+            wz_home_qa_assert(hash_file('sha256', $earlierHome . '/' . $path) === $versions[0]['sha256'], 'Upgraded from ' . $route . ': ' . $path);
+        }
+        foreach ($preserved as $path => $content) {
+            wz_home_qa_assert(file_get_contents($earlierHome . '/' . $path) === $content, 'Owner content survives ' . $route . ': ' . $path);
+        }
+        $earlierBackups = glob(dirname($earlierHome) . '/weddingza-homepage-backup-*');
+        wz_home_qa_assert(count($earlierBackups) === 1 && (fileperms($earlierBackups[0]) & 0777) === 0700,
+            'Private backup exists for ' . $route);
+        $result = wz_home_qa_run($installer, $earlierHome);
+        wz_home_qa_assert($result['code'] === 0 && str_contains($result['output'], 'already installed')
+            && count(glob(dirname($earlierHome) . '/weddingza-homepage-backup-*')) === 1, 'Repeated upgrade is safe for ' . $route);
+    }
+
+    require $root . '/includes/home-content.php';
+    $ownerEvent = ['id' => 'birthday', 'name' => 'Owner celebration', 'image' => 'uploads/owner.jpg'];
+    $ownerIdea = ['id' => 7, 'title' => 'Owner idea', 'image' => 'https://example.com/owner-photo.jpg'];
+    $ownerArticle = ['id' => 'guest-experience', 'title' => 'Owner guide', 'image' => 'uploads/guide.jpg'];
+    wz_home_qa_assert(wz_home_events([$ownerEvent]) === [$ownerEvent]
+        && wz_home_ideas([$ownerIdea]) === [$ownerIdea]
+        && wz_home_articles([$ownerArticle]) === [$ownerArticle], 'Custom catalogue photos and text are preserved');
+} finally {
+    $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($fixture, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+    foreach ($files as $file) {
+        $file->isDir() && !$file->isLink() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+    }
+    rmdir($fixture);
+}

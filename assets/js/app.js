@@ -88,6 +88,15 @@
     const progress = qs('#pageProgress');
     const button = qs('#menuToggle');
     const menu = qs('#mobileMenu');
+    const backgroundStates = new Map();
+    let menuFocusTimer;
+
+    const focusMenu = () => {
+      if (menu?.classList.contains('open')
+        && (document.activeElement === button || document.activeElement === document.body)) {
+        qs('a', menu)?.focus({ preventScroll: true });
+      }
+    };
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -108,6 +117,32 @@
     };
 
     const setMenu = (open) => {
+      if (!button || !menu || open === menu.classList.contains('open')) {
+        return;
+      }
+
+      const returnFocus = menu.contains(document.activeElement);
+      clearTimeout(menuFocusTimer);
+      menu.inert = !open;
+
+      if (open) {
+        [...document.body.children].forEach((element) => {
+          if (element === header || element === menu || element.tagName === 'SCRIPT') {
+            return;
+          }
+          backgroundStates.set(element, element.inert);
+          element.inert = true;
+        });
+        window.WZ_LENIS?.stop();
+      } else {
+        backgroundStates.forEach((inert, element) => {
+          element.inert = inert;
+        });
+        backgroundStates.clear();
+        window.WZ_LENIS?.start();
+      }
+
+      button.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       document.body.classList.toggle(
         'menu-open',
         open
@@ -132,6 +167,15 @@
         'aria-hidden',
         String(!open)
       );
+
+      if (open) {
+        // Focus after the reveal. Chromium can reject focus at the initial
+        // hidden frame of the visibility/clip-path transition.
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        menuFocusTimer = setTimeout(focusMenu, reducedMotion ? 50 : 750);
+      } else if (returnFocus) {
+        button.focus({ preventScroll: true });
+      }
     };
 
     window.addEventListener(
@@ -154,8 +198,39 @@
       }
     });
 
+    menu?.addEventListener('transitionend', (event) => {
+      if (event.target === menu && event.propertyName === 'clip-path') {
+        focusMenu();
+      }
+    });
+
+    header?.addEventListener('click', (event) => {
+      if (event.target.closest('a')) {
+        setMenu(false);
+      }
+    });
+
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
+        setMenu(false);
+      }
+      if (event.key === 'Tab' && menu?.classList.contains('open')) {
+        const items = [...qsa('a, button', header), ...qsa('a, button', menu)]
+          .filter((element) => element.getClientRects().length && !element.closest('[inert]'));
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1280) {
         setMenu(false);
       }
     });
@@ -309,10 +384,24 @@
   }
 
   function shortlistIds() {
-    return storage.get(
+    const saved = storage.get(
       'wz_shortlist',
       []
     );
+
+    // Older card templates added whitespace around saved profile IDs.
+    const ids = Array.isArray(saved)
+      ? [...new Set(saved
+        .filter((id) => typeof id === 'string')
+        .map((id) => id.trim())
+        .filter(Boolean))]
+      : [];
+
+    if (JSON.stringify(saved) !== JSON.stringify(ids)) {
+      storage.set('wz_shortlist', ids);
+    }
+
+    return ids;
   }
 
   function initShortlist() {
@@ -322,10 +411,11 @@
 
       if (count) {
         count.textContent = String(ids.length);
+        count.hidden = ids.length === 0;
       }
 
       qsa('[data-shortlist]').forEach((button) => {
-        const id = button.dataset.shortlist;
+        const id = button.dataset.shortlist.trim();
         const selected = ids.includes(id);
 
         button.classList.toggle(
@@ -363,7 +453,11 @@
 
       event.preventDefault();
 
-      const id = button.dataset.shortlist;
+      const id = button.dataset.shortlist.trim();
+
+      if (!id) {
+        return;
+      }
       const ids = shortlistIds();
 
       const next = ids.includes(id)
@@ -419,7 +513,7 @@
       ).forEach((card) => {
         card.classList.toggle(
           'hidden',
-          !ids.includes(card.dataset.vendorId)
+          !ids.includes(card.dataset.vendorId.trim())
         );
       });
     }

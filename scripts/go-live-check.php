@@ -109,11 +109,11 @@ wz_live_add(
     $results,
     function_exists('curl_init')
         ? WZ_LIVE_PASS
-        : WZ_LIVE_WARNING,
+        : WZ_LIVE_BLOCKER,
     'cURL extension',
     function_exists('curl_init')
         ? 'Loaded.'
-        : 'Not loaded. Notification webhooks will fall back to PHP streams.'
+        : 'Required for Razorpay checkout. Enable the PHP cURL extension.'
 );
 
 wz_live_add(
@@ -139,13 +139,26 @@ $isLocalUrl = $appUrl === ''
         $appUrl
     );
 
+$urlHost = strtolower((string)parse_url($appUrl, PHP_URL_HOST));
+$isPlaceholderUrl = in_array(
+    $urlHost,
+    ['your-domain.com', 'example.com', 'your-domain.example', 'localhost', '::1', '[::1]'],
+    true
+);
+$validProductionUrl = filter_var($appUrl, FILTER_VALIDATE_URL)
+    && $isHttpsUrl
+    && !$isLocalUrl
+    && !$isPlaceholderUrl
+    && parse_url($appUrl, PHP_URL_USER) === null
+    && parse_url($appUrl, PHP_URL_PASS) === null;
+
 wz_live_add(
     $results,
-    $isHttpsUrl && !$isLocalUrl
+    $validProductionUrl
         ? WZ_LIVE_PASS
         : WZ_LIVE_BLOCKER,
     'Production app URL',
-    $isHttpsUrl && !$isLocalUrl
+    $validProductionUrl
         ? 'Configured as ' . $appUrl . '.'
         : 'Set app_url to the final HTTPS production domain.'
 );
@@ -155,9 +168,9 @@ wz_live_add(
     is_file($htaccessPath)
         ? WZ_LIVE_PASS
         : WZ_LIVE_BLOCKER,
-    'Apache security rules',
+    'Apache security rules (server verification still required)',
     is_file($htaccessPath)
-        ? '.htaccess is present.'
+        ? '.htaccess is present. Confirm the server actually enforces it over HTTP.'
         : '.htaccess is missing.'
 );
 
@@ -234,6 +247,15 @@ $healthToken = trim(
 
 wz_live_add(
     $results,
+    empty($operations['allow_demo_login']) ? WZ_LIVE_PASS : WZ_LIVE_BLOCKER,
+    'Demo account access',
+    empty($operations['allow_demo_login'])
+        ? 'Disabled.'
+        : 'Set operations.allow_demo_login to false before launch.'
+);
+
+wz_live_add(
+    $results,
     strlen($healthToken) >= 32
         ? WZ_LIVE_PASS
         : WZ_LIVE_BLOCKER,
@@ -273,20 +295,10 @@ wz_live_add(
 );
 
 if ($pdo instanceof PDO) {
-    $requiredTables = [
-        'users',
-        'customer_profiles',
-        'vendor_profiles',
-        'venue_profiles',
-        'crm_enquiries',
-        'crm_bookings',
-        'crm_messages',
-        'crm_payments',
-        'crm_quotes',
-        'user_notifications',
-        'notification_preferences',
-        'notification_delivery_log',
-    ];
+    // The fresh schema is the source of truth for all required CRM tables.
+    $schema = file_get_contents($root . '/database/schema.sql') ?: '';
+    preg_match_all('/CREATE TABLE\s+([a-z_]+)/i', $schema, $tableMatches);
+    $requiredTables = $tableMatches[1];
 
     $missingTables = [];
 
@@ -298,15 +310,27 @@ if ($pdo instanceof PDO) {
 
     wz_live_add(
         $results,
-        !$missingTables
+        $requiredTables && !$missingTables
             ? WZ_LIVE_PASS
             : WZ_LIVE_BLOCKER,
         'Database migrations',
-        !$missingTables
+        $requiredTables && !$missingTables
             ? 'Required live tables are present.'
-            : 'Missing tables: '
+            : 'Required schema missing or incomplete. Missing tables: '
                 . implode(', ', $missingTables)
                 . '. Run scripts/upgrade-existing-database.php.'
+    );
+
+    $adminCount = wz_live_table_exists($pdo, 'users')
+        ? (int)$pdo->query('SELECT COUNT(*) FROM users WHERE role = "admin" AND status = "active"')->fetchColumn()
+        : 0;
+    wz_live_add(
+        $results,
+        $adminCount > 0 ? WZ_LIVE_PASS : WZ_LIVE_BLOCKER,
+        'Administrator account',
+        $adminCount > 0
+            ? 'An active administrator account exists.'
+            : 'Create an administrator with scripts/create-admin.php before launch.'
     );
 }
 
@@ -485,6 +509,41 @@ wz_live_add(
         : 'Image fallback asset is missing.'
 );
 
+$draftPolicyPages = [];
+foreach (['privacy.php', 'terms.php', 'cancellation.php'] as $policyPage) {
+    $policyText = is_file($root . '/' . $policyPage)
+        ? file_get_contents($root . '/' . $policyPage)
+        : false;
+    if (
+        $policyText === false
+        || preg_match('/development\/demo website|demo package|placeholder policy/i', $policyText)
+    ) {
+        $draftPolicyPages[] = $policyPage;
+    }
+}
+wz_live_add(
+    $results,
+    !$draftPolicyPages ? WZ_LIVE_PASS : WZ_LIVE_BLOCKER,
+    'Published business policies',
+    !$draftPolicyPages
+        ? 'Policy pages exist and no known draft markers remain. Confirm client approval separately.'
+        : 'Replace draft policy copy with client-approved content in: ' . implode(', ', $draftPolicyPages) . '.'
+);
+
+$missingBusinessDetails = ['policy business-details helper'];
+if (is_file($root . '/includes/policies.php')) {
+    require_once $root . '/includes/policies.php';
+    $missingBusinessDetails = wz_policy_missing_details(wz_policy_details());
+}
+wz_live_add(
+    $results,
+    !$missingBusinessDetails ? WZ_LIVE_PASS : WZ_LIVE_BLOCKER,
+    'Business and grievance details',
+    !$missingBusinessDetails
+        ? 'Operator, address, support and named grievance contact are configured. Verify their accuracy and monitor the contact channels.'
+        : 'Add actual public business details: ' . implode(', ', $missingBusinessDetails) . '.'
+);
+
 $blockers = array_values(
     array_filter(
         $results,
@@ -559,8 +618,8 @@ if ($blockers) {
 
 fwrite(
     STDOUT,
-    "\nREADY FOR LIVE\n"
-    . "No launch blockers were detected. Review warnings before DNS cutover.\n"
+    "\nSERVER CONFIGURATION CHECK PASSED\n"
+    . "Complete real-domain login, upload, SSL, payment and webhook tests before launch.\n"
 );
 
 exit(0);
