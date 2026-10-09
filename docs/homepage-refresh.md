@@ -1,4 +1,4 @@
-# Homepage refresh — 8 October 2026
+# Homepage refresh — 9 October 2026
 
 The first section has a smaller headline, a short explanation and an always
 visible city / occasion / service search. Submitting it opens `vendors.php`
@@ -37,7 +37,7 @@ Photo sources are recorded in `home-photo-credits.md`.
 
 Run the pinned `scripts/apply-homepage-refresh.php` from `~/public_html` after
 the header and city releases. It embeds 30 runtime files and the exact deployed
-baselines, including the earlier homepage and first animation releases. It validates every
+baselines, including the earlier homepage and both animation releases. It validates every
 destination and payload, then backs up originals
 privately outside the web root, stages all replacements and publishes them by
 rename. Unknown edits, unsafe paths or damaged payloads stop before publication.
@@ -64,4 +64,4 @@ browser suite also retains the shared navigation and 50-city discovery checks.
 Earlier header, city and policy installers are immutable release snapshots.
 Their QA validates and exercises those snapshots. Homepage installer QA checks
 the current homepage source, its deployed header baseline, the earlier
-homepage release and the first animation release.
+homepage release and both animation releases.

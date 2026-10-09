@@ -26,7 +26,6 @@
       '.home-refreshed .hero-plan-dock > button, .home-refreshed .home-help-actions a, .vision-finale a'
     )];
     const photoCurtains = new Map();
-    const revealedPhotos = new Set();
     let userPaused = false;
     let context = null;
     let cleanupPointer = () => {};
@@ -139,6 +138,15 @@
 
       heading.dataset.motionWords = 'ready';
       return [...heading.querySelectorAll('.home-motion-word')];
+    }
+
+    function replayOnScroll(trigger, start = 'top 92%') {
+      return {
+        trigger,
+        start,
+        end: 'bottom 10%',
+        toggleActions: 'restart none restart none'
+      };
     }
 
     function pointerMotion() {
@@ -302,8 +310,12 @@
       gsap.registerPlugin(ScrollTrigger);
 
       context = gsap.context(() => {
-        const opening = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        const words = splitWords(home.querySelector('h1'));
+        const title = home.querySelector('h1');
+        const opening = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          scrollTrigger: replayOnScroll(title)
+        });
+        const words = splitWords(title);
         const background = hero.querySelector('.vision-hero-bg img');
         const portrait = hero.querySelector('.home-hero-portrait img');
 
@@ -354,7 +366,7 @@
             stagger: .045,
             ease: 'power3.out',
             clearProps: 'transform,opacity',
-            scrollTrigger: { trigger: heading, start: 'top 92%', once: true }
+            scrollTrigger: replayOnScroll(heading)
           });
 
           const accent = heading.querySelector('em');
@@ -363,7 +375,7 @@
               '--heading-line': 1,
               duration: 1,
               ease: 'power3.out',
-              scrollTrigger: { trigger: heading, start: 'top 90%', once: true }
+              scrollTrigger: replayOnScroll(heading, 'top 90%')
             });
           }
         });
@@ -372,7 +384,7 @@
           const divider = header.querySelector('.home-motion-divider');
           const details = [header.querySelector('small, .home-kicker'), header.querySelector(':scope > p')].filter(Boolean);
           const reveal = gsap.timeline({
-            scrollTrigger: { trigger: header, start: 'top 92%', once: true }
+            scrollTrigger: replayOnScroll(header)
           });
           reveal.fromTo(details, { y: 10, opacity: .55 }, {
             y: 0,
@@ -399,18 +411,19 @@
         home.querySelectorAll(
           '.vision-category-image img, .vision-city-card figure img, .vendor-media img, .vision-real-panel img, .home-idea-image img, .journal-media img'
         ).forEach(photo => {
-          if (revealedPhotos.has(photo)) {
-            return;
-          }
           const curtain = photoCurtains.get(photo.parentElement);
           const reveal = gsap.timeline({
+            onStart: () => {
+              if (curtain) {
+                curtain.hidden = false;
+              }
+            },
             onComplete: () => {
-              revealedPhotos.add(photo);
               if (curtain) {
                 curtain.hidden = true;
               }
             },
-            scrollTrigger: { trigger: photo.parentElement, start: 'top 94%', once: true }
+            scrollTrigger: replayOnScroll(photo.parentElement, 'top 94%')
           });
           reveal.fromTo(photo, { scale: 1.14, opacity: .45, yPercent: 2, clipPath: 'inset(0% 0% 22% 0%)' }, {
             scale: 1.035,
@@ -437,7 +450,7 @@
             duration: .65,
             stagger: .075,
             clearProps: 'opacity',
-            scrollTrigger: { trigger: group, start: 'top 94%', once: true }
+            scrollTrigger: replayOnScroll(group, 'top 94%')
           });
         });
 
@@ -446,7 +459,7 @@
           '--step-line': 1,
           duration: .8,
           stagger: .16,
-          scrollTrigger: { trigger: '.home-step-grid', start: 'top 90%', once: true }
+          scrollTrigger: replayOnScroll('.home-step-grid', 'top 90%')
         });
         gsap.fromTo(home.querySelectorAll('.home-step-number'), { scale: .8, rotation: -12 }, {
           scale: 1,
@@ -455,7 +468,7 @@
           stagger: .16,
           ease: 'back.out(1.5)',
           clearProps: 'transform',
-          scrollTrigger: { trigger: '.home-step-grid', start: 'top 90%', once: true }
+          scrollTrigger: replayOnScroll('.home-step-grid', 'top 90%')
         });
 
         gsap.fromTo(progress, { scaleX: 0 }, {

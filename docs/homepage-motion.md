@@ -1,4 +1,4 @@
-# Homepage motion — 8 October 2026
+# Homepage motion — 9 October 2026
 
 The homepage has one animation controller in `assets/js/home-motion.js` and
 one stylesheet in `assets/css/home-motion.css`. Shared navigation and animation
@@ -21,8 +21,14 @@ diamond between sections. Section labels and descriptions enter together.
 The hero photo has a thin outline that draws once. On mouse devices, a soft
 highlight follows the pointer across cards and primary buttons move at most
 three pixels toward it. These effects reuse the controller and existing photo
-timelines, and the one-off reveals finish in about a second.
-Completed photo panels are hidden and do not replay on resize or resume.
+timelines, and the reveals finish in about a second.
+Headings, photographs, section lines and planning steps replay when they
+re-enter the viewport from either scroll direction. The hero headline and
+portrait outline replay when the headline returns into view on back scroll.
+Reveals restart on entry and stay readable until they leave the viewport;
+they do not reverse or hide content while visitors are reading it.
+Completed photo panels are hidden and reopen only when their reveal starts
+again. A layout refresh by itself does not restart a completed reveal.
 Phone section descriptions reset the old two-column placement so titles and
 introductions occupy the full width without overlap.
 
@@ -48,14 +54,16 @@ content and native search form remain usable.
 ## Deployment and checks
 
 The backed-up homepage installer accepts the deployed header release, the
-earlier homepage update and the first animation update. It includes the two
+earlier homepage update and both animation updates. It includes the two
 animation assets, updates
 script query versions and advances the service-worker cache. The installer QA
-verifies all three upgrade routes, rejection of unknown edits, preservation of owner
+verifies all four upgrade routes, rejection of unknown edits, preservation of owner
 content, private backups and repeated runs.
 
 Browser checks cover motion, pause/resume persistence, live reduced-motion
 changes, search, shortlists, caption fit and responsive layouts on desktop and
 phones. Photo panels must clear the images without intercepting links; pointer
-effects must reset and pause cleanly. The rest of the navigation and catalogue
+effects must reset and pause cleanly. Repeat-entry checks verify both scroll
+directions, the returning hero and steps, and pausing during a replay.
+The rest of the navigation and catalogue
 suite runs in release CI.

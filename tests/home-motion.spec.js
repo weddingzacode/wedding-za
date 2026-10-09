@@ -10,6 +10,17 @@ async function openHome(page, testInfo) {
   await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'running');
 }
 
+async function scrollHomeTo(page, position) {
+  await page.evaluate(position => {
+    if (window.WZ_LENIS) {
+      window.WZ_LENIS.scrollTo(position, { immediate: true, force: true });
+    } else {
+      window.scrollTo(0, position);
+    }
+    ScrollTrigger.update();
+  }, position);
+}
+
 test('homepage motion reveals readable content and responds to scrolling and pointer movement', async ({ page }, testInfo) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -164,4 +175,94 @@ test('mouse highlights and magnetic actions reset, and pausing clears decorative
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'reduced');
   await expect(page.locator('.home-motion-toggle')).toBeHidden();
+});
+
+test('headings, photos and dividers replay when revisited from both scroll directions', async ({ page }, testInfo) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await openHome(page, testInfo);
+  const heading = page.locator('#homeEventsHeading');
+  const words = heading.locator('.home-motion-word');
+  const card = page.locator('.vision-category-panel').first();
+  const curtain = card.locator('.home-photo-curtain');
+  const divider = page.locator('#visionExperience .home-motion-divider-line').first();
+  const position = await heading.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+  const belowCard = await card.evaluate(element => element.getBoundingClientRect().bottom + window.scrollY);
+  const height = page.viewportSize().height;
+  const viewingPosition = Math.max(0, position - height * .25);
+
+  async function expectReplay() {
+    await expect(curtain).toBeVisible();
+    await expect.poll(() => words.evaluateAll(elements =>
+      elements.some(element => Number(getComputedStyle(element).opacity) < .99)
+    )).toBeTruthy();
+    await expect.poll(() => divider.evaluate(element =>
+      new DOMMatrixReadOnly(getComputedStyle(element).transform).a
+    )).toBeLessThan(.99);
+    await expect(curtain).toBeHidden();
+    await expect.poll(() => words.evaluateAll(elements =>
+      elements.every(element => getComputedStyle(element).opacity === '1')
+    )).toBeTruthy();
+    await expect.poll(() => divider.evaluate(element =>
+      new DOMMatrixReadOnly(getComputedStyle(element).transform).a
+    )).toBeGreaterThan(.99);
+    expect(await card.locator('img').evaluate(image => getComputedStyle(image).clipPath)).toBe('none');
+  }
+
+  await scrollHomeTo(page, viewingPosition);
+  await expectReplay();
+  await scrollHomeTo(page, belowCard + height * .5);
+  await expect(card).not.toBeInViewport();
+  await scrollHomeTo(page, viewingPosition);
+  await expectReplay();
+  await scrollHomeTo(page, 0);
+  await expect(card).not.toBeInViewport();
+  await scrollHomeTo(page, viewingPosition);
+  await expectReplay();
+
+  await page.evaluate(() => ScrollTrigger.refresh());
+  await expect(curtain).toBeHidden();
+  await card.click();
+  await expect(page).toHaveURL(/\/event\.php\?type=Wedding$/);
+  expect(errors).toEqual([]);
+});
+
+test('hero and planning steps replay on back scroll and remain visible when motion is paused', async ({ page }, testInfo) => {
+  await openHome(page, testInfo);
+  const heroWords = page.locator('h1 .home-motion-word');
+  await expect.poll(() => heroWords.evaluateAll(words =>
+    words.every(word => getComputedStyle(word).opacity === '1')
+  )).toBeTruthy();
+  const steps = page.locator('.home-step-grid');
+  const position = await steps.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+  const bottom = await steps.evaluate(element => element.getBoundingClientRect().bottom + window.scrollY);
+  const height = page.viewportSize().height;
+  const viewingPosition = Math.max(0, position - height * .25);
+  const firstStep = steps.locator('li').first();
+  await scrollHomeTo(page, viewingPosition);
+  await expect.poll(() => firstStep.evaluate(element =>
+    Number(getComputedStyle(element).getPropertyValue('--step-line'))
+  )).toBeGreaterThan(.99);
+  await scrollHomeTo(page, bottom + height * .5);
+  await expect(steps).not.toBeInViewport();
+  await scrollHomeTo(page, viewingPosition);
+  await expect.poll(() => firstStep.evaluate(element =>
+    Number(getComputedStyle(element).getPropertyValue('--step-line'))
+  )).toBeLessThan(.99);
+  await expect.poll(() => firstStep.evaluate(element =>
+    Number(getComputedStyle(element).getPropertyValue('--step-line'))
+  )).toBeGreaterThan(.99);
+
+  await scrollHomeTo(page, 0);
+  await expect.poll(() => heroWords.evaluateAll(words =>
+    words.some(word => Number(getComputedStyle(word).opacity) < .99)
+  )).toBeTruthy();
+  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
+  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'paused');
+  await expect.poll(() => heroWords.evaluateAll(words =>
+    words.every(word => getComputedStyle(word).opacity === '1')
+  )).toBeTruthy();
+  await scrollHomeTo(page, viewingPosition);
+  expect(await firstStep.evaluate(element => getComputedStyle(element).transform)).toBe('none');
+  await expect(page.getByRole('search', { name: 'Find venues and vendors' })).toBeVisible();
 });
