@@ -384,10 +384,24 @@
   }
 
   function shortlistIds() {
-    return storage.get(
+    const saved = storage.get(
       'wz_shortlist',
       []
     );
+
+    // Older card templates added whitespace around saved profile IDs.
+    const ids = Array.isArray(saved)
+      ? [...new Set(saved
+        .filter((id) => typeof id === 'string')
+        .map((id) => id.trim())
+        .filter(Boolean))]
+      : [];
+
+    if (JSON.stringify(saved) !== JSON.stringify(ids)) {
+      storage.set('wz_shortlist', ids);
+    }
+
+    return ids;
   }
 
   function initShortlist() {
@@ -401,7 +415,7 @@
       }
 
       qsa('[data-shortlist]').forEach((button) => {
-        const id = button.dataset.shortlist;
+        const id = button.dataset.shortlist.trim();
         const selected = ids.includes(id);
 
         button.classList.toggle(
@@ -439,7 +453,11 @@
 
       event.preventDefault();
 
-      const id = button.dataset.shortlist;
+      const id = button.dataset.shortlist.trim();
+
+      if (!id) {
+        return;
+      }
       const ids = shortlistIds();
 
       const next = ids.includes(id)
@@ -495,7 +513,7 @@
       ).forEach((card) => {
         card.classList.toggle(
           'hidden',
-          !ids.includes(card.dataset.vendorId)
+          !ids.includes(card.dataset.vendorId.trim())
         );
       });
     }

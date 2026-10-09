@@ -50,6 +50,8 @@ function wz_header_qa_run(string $script, string $cwd): array
 
 // The header installer is an immutable release snapshot.
 $headerSnapshots = [
+    'assets/js/app.js' => 'eec41c60c8abeaa1ca4bdaee95ef0cbfbec4f1e04b93d699370b944966ae98e7',
+    'includes/header.php' => 'd1c89243cde9e155f38145179165e9f7e8a9676948c7a3025983f277081532a4',
     'index.php' => '72127c0dfd2fe94d659b10ef75244036181e2623b45fcc2079cf370989f77476',
     'assets/js/vision.js' => 'd0dac64ad7c91061a799fbdc5caadae9e7ad2110f9bfe892131fe4eab4188fcb',
     'includes/footer.php' => '7497791d8e40ecf8e6174c9a5051a12355ed0839c85c29c8d098241297870ee3',

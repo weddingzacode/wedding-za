@@ -36,9 +36,9 @@ Photo sources are recorded in `home-photo-credits.md`.
 ## GoDaddy update
 
 Run the pinned `scripts/apply-homepage-refresh.php` from `~/public_html` after
-the header and city releases. It embeds 30 runtime files and the exact deployed
+the header and city releases. It embeds 34 runtime files and the exact deployed
 baselines, including the earlier homepage, both animation releases and the
-back-scroll release. It validates every
+back-scroll and pause-button removal releases. It validates every
 destination and payload, then backs up originals
 privately outside the web root, stages all replacements and publishes them by
 rename. Unknown edits, unsafe paths or damaged payloads stop before publication.
@@ -62,7 +62,17 @@ pointer tilt, removal of the pause control, ignored legacy pause settings,
 working search and live changes to the reduced-motion preference. The
 browser suite also retains the shared navigation and 50-city discovery checks.
 
+The homepage link audit also checks every distinct destination, all four featured
+business profiles, visible search results, visible saved cards, profile save
+state, comparison and occasion details. Shared card attributes now contain exact
+IDs and filter values; older saved IDs are trimmed and deduplicated so existing
+shortlists remain usable. The vendor profile includes each shared PHP library
+once. Header option loops use their own names, preserving page-level occasion
+details and venue city filters. These changes use app.js version 4.1.2 and service
+worker cache v14, while retaining the requested scroll animations.
+
 Earlier header, city and policy installers are immutable release snapshots.
 Their QA validates and exercises those snapshots. Homepage installer QA checks
 the current homepage source, its deployed header baseline, the earlier
-homepage release, both animation releases and the back-scroll release.
+homepage release, both animation releases, the back-scroll release and the
+pause-button removal release.

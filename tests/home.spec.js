@@ -34,6 +34,10 @@ test('homepage search is immediately reachable and opens the selected results', 
   await expect(page.locator('#filterCity')).toHaveValue('Jaipur');
   await expect(page.locator('#filterEvent')).toHaveValue('Wedding');
   await expect(page.locator('#filterCategory')).toHaveValue('Venues');
+  const matchingCards = page.locator('#vendorListing .vendor-card:not(.hidden)');
+  await expect(matchingCards).toHaveCount(1);
+  await expect(matchingCards.getByRole('heading', { level: 3 })).toHaveText('Amber Courtyard');
+  await expect(matchingCards.first()).toBeVisible();
 });
 
 test('occasion photos load and birthday navigation preserves the selected occasion', async ({ page }, testInfo) => {
@@ -77,6 +81,8 @@ test('customer steps lead to cities, browsing and a working shortlist', async ({
   await steps.getByRole('link', { name: 'Open your shortlist' }).click();
   await expect(page).toHaveURL(/\/shortlist\.php$/);
   await expect(page.locator('#shortlistGrid')).toContainText(vendorName);
+  await expect(page.locator('#shortlistGrid .vendor-card:not(.hidden)')).toHaveCount(1);
+  await expect(page.locator('#shortlistGrid').getByRole('heading', { name: vendorName, exact: true })).toBeVisible();
 });
 
 test('compact cards fit different screens and make the page shorter', async ({ page }, testInfo) => {

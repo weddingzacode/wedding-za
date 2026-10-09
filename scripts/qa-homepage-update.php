@@ -54,7 +54,7 @@ function wz_home_qa_run(string $script, string $cwd): array
 }
 
 try {
-    wz_home_qa_assert(count($manifest) === 30, 'The homepage release contains exactly 30 runtime files');
+    wz_home_qa_assert(count($manifest) === 34, 'The homepage release contains exactly 34 runtime files');
     $webRoot = $fixture . '/public_html';
     foreach (['includes', 'assets/css', 'assets/js', 'assets/images', 'assets/data', 'uploads', 'storage'] as $directory) {
         mkdir($webRoot . '/' . $directory, 0700, true);
@@ -62,8 +62,8 @@ try {
     foreach ($manifest as $path => $versions) {
         $baselineCounts = [
             'index.php' => 4,
-            'includes/footer.php' => 5,
-            'sw.js' => 5,
+            'includes/footer.php' => 6,
+            'sw.js' => 6,
             'assets/js/vision.js' => 2,
             'assets/css/home-motion.css' => 3,
             'assets/js/home-motion.js' => 4,
@@ -185,8 +185,18 @@ try {
             'assets/css/home-motion.css' => 2,
             'assets/js/home-motion.js' => 3,
         ],
+        'no-pause-button' => [
+            'includes/footer.php' => 5,
+            'sw.js' => 5,
+        ],
     ];
     foreach ($upgradeRoutes as $route => $baselineIndexes) {
+        $baselineIndexes += [
+            'includes/components.php' => 0,
+            'includes/header.php' => 0,
+            'vendor.php' => 0,
+            'assets/js/app.js' => 0,
+        ];
         $earlierHome = $fixture . '/' . $route . '/public_html';
         mkdir($earlierHome, 0700, true);
         foreach ($manifest as $path => $versions) {

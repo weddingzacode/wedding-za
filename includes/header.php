@@ -542,9 +542,9 @@ if (wz_is_logged_in()) {
                             Any celebration
                         </option>
 
-                        <?php foreach (wz_data('event_types') as $event): ?>
+                        <?php foreach (wz_data('event_types') as $headerEventChoice): ?>
                             <option>
-                                <?= h($event['name']) ?>
+                                <?= h($headerEventChoice['name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -560,9 +560,9 @@ if (wz_is_logged_in()) {
                             All vendor categories
                         </option>
 
-                        <?php foreach (wz_data('categories') as $category): ?>
+                        <?php foreach (wz_data('categories') as $headerCategoryChoice): ?>
                             <option>
-                                <?= h($category['name']) ?>
+                                <?= h($headerCategoryChoice['name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -578,9 +578,9 @@ if (wz_is_logged_in()) {
                             All cities
                         </option>
 
-                        <?php foreach (wz_data('cities') as $city): ?>
+                        <?php foreach (wz_data('cities') as $headerCityChoice): ?>
                             <option>
-                                <?= h($city) ?>
+                                <?= h($headerCityChoice) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

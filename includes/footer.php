@@ -163,7 +163,7 @@ window.WZ_BOOT = <?= json_encode([
 <script src="assets/js/lib/gsap-3.15.0.min.js"></script>
 <script src="assets/js/lib/ScrollTrigger-3.15.0.min.js"></script>
 <script src="assets/js/lib/lenis-1.3.26.min.js"></script>
-<script src="assets/js/app.js?v=4.1.1"></script>
+<script src="assets/js/app.js?v=4.1.2"></script>
 <script src="assets/js/vision.js?v=4.0.7"></script>
 <?php if ($pageKey === 'home'): ?>
     <script src="assets/js/home-motion.js?v=2026-10-09-2"></script>
