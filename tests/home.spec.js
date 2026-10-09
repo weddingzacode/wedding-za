@@ -35,8 +35,12 @@ test('homepage search is immediately reachable and opens the selected results', 
   await expect(page.locator('#filterEvent')).toHaveValue('Wedding');
   await expect(page.locator('#filterCategory')).toHaveValue('Venues');
   const matchingCards = page.locator('#vendorListing .vendor-card:not(.hidden)');
-  await expect(matchingCards).toHaveCount(1);
-  await expect(matchingCards.getByRole('heading', { level: 3 })).toHaveText('Amber Courtyard');
+  await expect(matchingCards).toHaveCount(3);
+  await expect(matchingCards.getByRole('heading', { level: 3 })).toHaveText([
+    'Amber Courtyard',
+    'Hotel Rudra Vilas',
+    'The Gopal Bagh & Resort',
+  ]);
   await expect(matchingCards.first()).toBeVisible();
 });
 

@@ -100,8 +100,11 @@
             <?= h($v['city']) ?>
             </span>
             <span>
-            ★
-            <?= h((string)$v['rating']) ?>
+            <?php if ((int)($v['reviews'] ?? 0) > 0): ?>
+                ★ <?= h((string)$v['rating']) ?>
+            <?php else: ?>
+                New listing
+            <?php endif; ?>
             </span>
         </div>
         <h3>

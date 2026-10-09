@@ -10,6 +10,8 @@ routes=(
   "/vendors.php"
   "/vendor.php?id=amber-courtyard"
   "/vendor.php?id=raas-udaipur"
+  "/vendor.php?id=hotel-rudra-vilas-jaipur"
+  "/vendor.php?id=the-gopal-bagh-resort-jaipur"
   "/vendor.php?id=frame-story"
   "/vendor.php?id=northstar-films"
   "/privacy.php"

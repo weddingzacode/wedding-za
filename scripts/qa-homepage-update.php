@@ -53,6 +53,13 @@ function wz_home_qa_run(string $script, string $cwd): array
     return ['code' => proc_close($process), 'output' => $output, 'error' => $error];
 }
 
+// Keep the earlier homepage installer immutable after the venue release.
+$homeSnapshots = [
+    'vendor.php' => '8feb7b697f1812e802f10d9805d9e6f101884fa99a085760f5fd3e90f4e18353',
+    'includes/components.php' => '748a626473dcafad8987736f2c0df530810fbe0d8ee2185b0487a848e7432082',
+    'sw.js' => '641fe63a0bab61a10265091d6f680a06729668a0205b477c156add4953f4971b',
+];
+
 try {
     wz_home_qa_assert(count($manifest) === 34, 'The homepage release contains exactly 34 runtime files');
     $webRoot = $fixture . '/public_html';
@@ -72,7 +79,8 @@ try {
         wz_home_qa_assert(count($versions) === ($baselineCounts[$path] ?? 1), 'Verified deployment baselines: ' . $path);
         $entry = $versions[0];
         $next = wz_home_qa_decode($entry['content_gzip_base64'], $entry['sha256']);
-        wz_home_qa_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches current source: ' . $path);
+        $sourceHash = $homeSnapshots[$path] ?? hash_file('sha256', $root . '/' . $path);
+        wz_home_qa_assert($sourceHash === $entry['sha256'], 'Installer matches its release snapshot: ' . $path);
         foreach ($versions as $version) {
             wz_home_qa_assert($version['sha256'] === $entry['sha256']
                 && wz_home_qa_decode($version['content_gzip_base64'], $version['sha256']) === $next,

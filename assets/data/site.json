@@ -517,6 +517,295 @@
         "Festive",
         "Private Party"
       ]
+    },
+    {
+      "id": "hotel-rudra-vilas-jaipur",
+      "name": "Hotel Rudra Vilas",
+      "category": "Venues",
+      "business_type": "venue",
+      "city": "Jaipur",
+      "locality": "Mansarovar",
+      "address": "Near SFS Choraha, opposite ICG College, Mansarovar, Jaipur, Rajasthan",
+      "rating": 0,
+      "reviews": 0,
+      "price": "Request pricing",
+      "pricing_on_request": true,
+      "tag": "Heritage hotel & wedding venue",
+      "image": "assets/images/venues/rudra-vilas-lawn.webp",
+      "images": [
+        "assets/images/venues/rudra-vilas-lawn.webp",
+        "assets/images/venues/rudra-vilas-exterior.webp",
+        "assets/images/venues/rudra-vilas-banquet.webp",
+        "assets/images/venues/rudra-vilas-celebration-hall.webp",
+        "assets/images/venues/rudra-vilas-room.webp",
+        "assets/images/venues/rudra-vilas-evening.webp",
+        "assets/images/venues/rudra-vilas-haldi.webp",
+        "assets/images/venues/rudra-vilas-terrace.webp"
+      ],
+      "photos": [
+        {
+          "src": "assets/images/venues/rudra-vilas-lawn.webp",
+          "caption": "Wedding setup on the lawn",
+          "width": 1280,
+          "height": 576
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-exterior.webp",
+          "caption": "Heritage-style hotel exterior",
+          "width": 1024,
+          "height": 489
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-banquet.webp",
+          "caption": "Indoor banquet hall",
+          "width": 1280,
+          "height": 960
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-celebration-hall.webp",
+          "caption": "Banquet set for a celebration",
+          "width": 1200,
+          "height": 800
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-room.webp",
+          "caption": "Heritage-style guest room",
+          "width": 1024,
+          "height": 682
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-evening.webp",
+          "caption": "Outdoor celebration at night",
+          "width": 1280,
+          "height": 575
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-haldi.webp",
+          "caption": "Haldi celebration setting",
+          "width": 813,
+          "height": 1080
+        },
+        {
+          "src": "assets/images/venues/rudra-vilas-terrace.webp",
+          "caption": "Hotel terrace at night",
+          "width": 1024,
+          "height": 682
+        }
+      ],
+      "about": "Rajasthani heritage meets modern comfort at Hotel Rudra Vilas in Mansarovar, Jaipur. With 45 heritage-style rooms, a spacious wedding lawn, two banquet halls and a rooftop area, the property brings stays and celebrations together in one setting. Its location near Jaipur International Airport makes it convenient for destination wedding guests, family getaways and corporate gatherings.",
+      "services": [
+        "Wedding lawn",
+        "Two banquet halls",
+        "Rooftop celebrations",
+        "Heritage-style accommodation",
+        "Swimming pool"
+      ],
+      "capacity": "Up to 700 guests",
+      "capacity_min": 0,
+      "capacity_max": 700,
+      "rooms": 45,
+      "venue_type": "Heritage hotel",
+      "experience": "Heritage-style hospitality",
+      "policy": "Request the venue’s booking, catering and cancellation terms before confirming.",
+      "verified": false,
+      "featured": false,
+      "venue_priority": 2,
+      "events": [
+        "Wedding",
+        "Engagement",
+        "Birthday",
+        "Anniversary",
+        "Corporate",
+        "Private Party"
+      ],
+      "spaces": [
+        "Lawn · up to 700 guests",
+        "Banquet Hall 1 · up to 450 guests",
+        "Banquet Hall 2 · up to 150 guests",
+        "Rooftop · capacity on request"
+      ],
+      "event_spaces": [
+        {
+          "name": "Wedding lawn",
+          "type": "Outdoor",
+          "capacity": 700,
+          "description": "An open-air garden for wedding ceremonies, receptions and large celebrations.",
+          "image": "assets/images/venues/rudra-vilas-lawn.webp"
+        },
+        {
+          "name": "Banquet Hall 1",
+          "type": "Indoor",
+          "capacity": 450,
+          "description": "A spacious indoor hall for receptions, sangeet and corporate events."
+        },
+        {
+          "name": "Banquet Hall 2",
+          "type": "Indoor",
+          "capacity": 150,
+          "description": "An intimate setting for engagements, birthdays and pre-wedding functions."
+        },
+        {
+          "name": "Rooftop area",
+          "type": "Rooftop",
+          "capacity": null,
+          "description": "An elevated setting for private dinners and evening gatherings."
+        }
+      ],
+      "amenities": [
+        "Swimming pool",
+        "45 heritage-style rooms",
+        "Indoor and outdoor event spaces",
+        "Rooftop area"
+      ],
+      "location_notes": [
+        {
+          "label": "Jaipur International Airport",
+          "value": "4 km"
+        },
+        {
+          "label": "Jaipur Main Railway Station",
+          "value": "12 km"
+        }
+      ],
+      "stay_description": "45 well-appointed rooms with a heritage-inspired style for wedding guests, families and leisure stays."
+    },
+    {
+      "id": "the-gopal-bagh-resort-jaipur",
+      "name": "The Gopal Bagh & Resort",
+      "category": "Venues",
+      "business_type": "venue",
+      "city": "Jaipur",
+      "locality": "Patrakar Colony, Mansarovar",
+      "address": "Patrakar Colony, Mansarovar, Jaipur, Rajasthan",
+      "rating": 0,
+      "reviews": 0,
+      "price": "Request pricing",
+      "pricing_on_request": true,
+      "tag": "Resort, banquets & wedding lawn",
+      "image": "assets/images/venues/gopal-bagh-resort-exterior.webp",
+      "images": [
+        "assets/images/venues/gopal-bagh-resort-exterior.webp",
+        "assets/images/venues/gopal-bagh-resort-banquet.webp",
+        "assets/images/venues/gopal-bagh-resort-lawn.webp",
+        "assets/images/venues/gopal-bagh-resort-room.webp",
+        "assets/images/venues/gopal-bagh-resort-pool.webp",
+        "assets/images/venues/gopal-bagh-resort-courtyard.webp",
+        "assets/images/venues/gopal-bagh-resort-lounge.webp",
+        "assets/images/venues/gopal-bagh-resort-aerial.webp"
+      ],
+      "photos": [
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-exterior.webp",
+          "caption": "Resort exterior and arrival area",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-banquet.webp",
+          "caption": "Grand banquet celebration setting",
+          "width": 1080,
+          "height": 789
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-lawn.webp",
+          "caption": "Wedding lawn",
+          "width": 1440,
+          "height": 810
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-room.webp",
+          "caption": "Guest room interior",
+          "width": 1440,
+          "height": 960
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-pool.webp",
+          "caption": "Swimming pool and poolside area",
+          "width": 1440,
+          "height": 810
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-courtyard.webp",
+          "caption": "Resort courtyard",
+          "width": 1440,
+          "height": 811
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-lounge.webp",
+          "caption": "Guest lounge",
+          "width": 1440,
+          "height": 810
+        },
+        {
+          "src": "assets/images/venues/gopal-bagh-resort-aerial.webp",
+          "caption": "Property overview",
+          "width": 1440,
+          "height": 817
+        }
+      ],
+      "about": "The Gopal Bagh & Resort brings luxury accommodation, grand banquet spaces and a landscaped wedding lawn together in Patrakar Colony, Mansarovar, Jaipur. Modern hospitality and Rajasthani elegance shape a setting for destination weddings, social celebrations and corporate stays, with 63 rooms, two banquet halls and a poolside area.",
+      "services": [
+        "Two banquet halls",
+        "Wedding lawn",
+        "Poolside celebrations",
+        "Guest accommodation",
+        "Parking and valet"
+      ],
+      "capacity": "Up to 800 guests indoors; lawn up to 700",
+      "capacity_min": 0,
+      "capacity_max": 800,
+      "rooms": 63,
+      "venue_type": "Resort",
+      "experience": "Resort stays and celebrations",
+      "policy": "Confirm the selected hall’s capacity, event layout and booking terms with the venue.",
+      "verified": false,
+      "featured": false,
+      "venue_priority": 1,
+      "events": [
+        "Wedding",
+        "Engagement",
+        "Birthday",
+        "Anniversary",
+        "Corporate",
+        "Private Party"
+      ],
+      "spaces": [
+        "Two banquet halls · up to 800 guests; confirm individual hall capacity",
+        "Wedding lawn · up to 700 guests",
+        "Poolside area · capacity on request"
+      ],
+      "event_spaces": [
+        {
+          "name": "Two banquet halls",
+          "type": "Indoor",
+          "capacity": 800,
+          "description": "Up to 800 guests. Confirm whether this applies to an individual hall or a combined layout for your event.",
+          "image": "assets/images/venues/gopal-bagh-resort-banquet.webp"
+        },
+        {
+          "name": "Wedding lawn",
+          "type": "Outdoor",
+          "capacity": 700,
+          "description": "A landscaped open-air setting for ceremonies, receptions and large social gatherings.",
+          "image": "assets/images/venues/gopal-bagh-resort-lawn.webp"
+        },
+        {
+          "name": "Poolside area",
+          "type": "Poolside",
+          "capacity": null,
+          "description": "A setting for cocktail evenings, haldi, mehendi and private celebrations.",
+          "image": "assets/images/venues/gopal-bagh-resort-pool.webp"
+        }
+      ],
+      "amenities": [
+        "Swimming pool",
+        "Poolside event area",
+        "63 air-conditioned rooms",
+        "Parking",
+        "Valet service"
+      ],
+      "location_notes": [],
+      "stay_description": "63 spacious, air-conditioned rooms for wedding guests, families and corporate travellers."
     }
   ],
   "weddings": [

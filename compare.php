@@ -102,10 +102,12 @@ require __DIR__ . '/includes/header.php';
                                         ', '
                                     ),
                                 'Rating' => fn (array $v): string =>
-                                    (string)($v['rating'] ?? 0)
+                                    (int)($v['reviews'] ?? 0) > 0
+                                    ? (string)($v['rating'] ?? 0)
                                     . ' ★ · '
                                     . (string)($v['reviews'] ?? 0)
-                                    . ' reviews',
+                                    . ' reviews'
+                                    : 'No published reviews yet',
                                 'Starting price' => fn (array $v): string =>
                                     (string)($v['price'] ?? 'Ask venue'),
                                 'Venue type' => fn (array $v): string =>

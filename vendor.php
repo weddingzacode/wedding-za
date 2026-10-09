@@ -128,6 +128,15 @@
         ],
     ];
 
+    if ($businessType === 'venue') {
+        require_once __DIR__ . '/includes/venue-directory.php';
+        $pageKey = 'venue';
+        require __DIR__ . '/includes/header.php';
+        require __DIR__ . '/includes/venue-profile.php';
+        require __DIR__ . '/includes/footer.php';
+        return;
+    }
+
     require __DIR__.'/includes/header.php';
     $images=$v['images']??[$v['image']];
     while(count($images)<3)$images[]=$v['image'];

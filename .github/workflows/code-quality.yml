@@ -50,6 +50,12 @@ jobs:
       - name: Check homepage installer safety
         run: php scripts/qa-homepage-update.php
 
+      - name: Check venue facts and photos
+        run: php scripts/qa-venues.php
+
+      - name: Check venue installer safety
+        run: php scripts/qa-venue-update.php
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -60,6 +66,7 @@ jobs:
           node --check assets/js/app.js
           node --check assets/js/vision.js
           node --check assets/js/home-motion.js
+          node --check assets/js/venues.js
           node --check sw.js
 
       - name: Validate JSON
@@ -157,6 +164,9 @@ jobs:
       - name: Run HTTP smoke tests
         run: |
           bash scripts/qa-smoke.sh http://127.0.0.1:8088
+
+      - name: Verify venue enquiries reach the CRM
+        run: php scripts/qa-venue-enquiries.php http://127.0.0.1:8088
 
       - name: Show PHP server log on failure
         if: failure()
