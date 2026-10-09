@@ -26,7 +26,6 @@
       '.home-refreshed .hero-plan-dock > button, .home-refreshed .home-help-actions a, .vision-finale a'
     )];
     const photoCurtains = new Map();
-    let userPaused = false;
     let context = null;
     let cleanupPointer = () => {};
     let heroObserver = null;
@@ -35,12 +34,6 @@
 
     if (finaleHeading) {
       headings.push(finaleHeading);
-    }
-
-    try {
-      userPaused = localStorage.getItem('wz_home_motion') === 'off';
-    } catch {
-      // The preference is optional when browser storage is unavailable.
     }
 
     cards.forEach(card => {
@@ -100,11 +93,6 @@
     progress.className = 'home-motion-progress';
     progress.setAttribute('aria-hidden', 'true');
     document.body.append(progress);
-
-    const toggle = document.createElement('button');
-    toggle.className = 'home-motion-toggle';
-    toggle.type = 'button';
-    document.body.append(toggle);
 
     function splitWords(heading) {
       if (heading.dataset.motionWords === 'ready') {
@@ -292,16 +280,13 @@
       progress.style.transform = 'scaleX(0)';
     }
 
-    function updatePreference() {
+    function updateMotion() {
       stop();
-      document.body.classList.toggle('home-motion-paused', reducedMotion.matches || userPaused);
-      toggle.hidden = reducedMotion.matches;
-      progress.hidden = reducedMotion.matches || userPaused;
-      toggle.textContent = userPaused ? 'Resume animations' : 'Pause animations';
-      toggle.setAttribute('aria-pressed', String(userPaused));
+      document.body.classList.toggle('home-motion-reduced', reducedMotion.matches);
+      progress.hidden = reducedMotion.matches;
 
-      if (reducedMotion.matches || userPaused) {
-        home.dataset.homeMotion = reducedMotion.matches ? 'reduced' : 'paused';
+      if (reducedMotion.matches) {
+        home.dataset.homeMotion = 'reduced';
         return;
       }
 
@@ -511,24 +496,14 @@
       ScrollTrigger.refresh();
     }
 
-    toggle.addEventListener('click', () => {
-      userPaused = !userPaused;
-      try {
-        localStorage.setItem('wz_home_motion', userPaused ? 'off' : 'on');
-      } catch {
-        // The pause control still works for this visit.
-      }
-      updatePreference();
-    });
-
-    reducedMotion.addEventListener('change', updatePreference);
-    finePointer.addEventListener('change', updatePreference);
+    reducedMotion.addEventListener('change', updateMotion);
+    finePointer.addEventListener('change', updateMotion);
     document.addEventListener('visibilitychange', () => {
       document.body.classList.toggle('home-motion-hidden', document.hidden);
     });
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
-    updatePreference();
+    updateMotion();
   }
 
   if (document.readyState === 'loading') {

@@ -65,34 +65,25 @@ test('homepage motion reveals readable content and responds to scrolling and poi
   expect(errors).toEqual([]);
 });
 
-test('visitors can pause homepage motion, keep content visible and save the preference', async ({ page }, testInfo) => {
+test('homepage has no pause control and old saved pause settings do not stop animations', async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem('wz_home_motion', 'off'));
   await openHome(page, testInfo);
-  const titleText = await page.getByRole('heading', { level: 1 }).textContent();
-  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
-  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'paused');
-  await expect(page.getByRole('button', { name: 'Resume animations', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.home-motion-progress')).toBeHidden();
-  expect(await page.locator('.home-hero-portrait img').evaluate(image => getComputedStyle(image).animationName)).toBe('none');
-  expect(await page.locator('.vision-category-image img').first().evaluate(image => getComputedStyle(image).opacity)).toBe('1');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(titleText);
+  await expect(page.getByRole('button', { name: /^(Pause|Resume) animations$/ })).toHaveCount(0);
+  await expect(page.locator('.home-motion-toggle')).toHaveCount(0);
   const card = page.locator('.vision-category-panel').first();
   await card.scrollIntoViewIfNeeded();
-  if (await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)) {
-    await card.hover();
-    expect(await card.evaluate(element => getComputedStyle(element).transform)).toBe('none');
-    expect(await card.locator('img').evaluate(image => getComputedStyle(image).transform)).toBe('none');
-  }
+  await expect(page.locator('.home-motion-progress')).toBeVisible();
+  await expect(card.locator('.home-photo-curtain')).toBeHidden();
+  expect(await card.locator('img').evaluate(image => getComputedStyle(image).opacity)).toBe('1');
 
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('#preloader')).toBeHidden();
-  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'paused');
-  await expect(page.getByRole('button', { name: 'Resume animations', exact: true })).toBeInViewport();
+  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'running');
+  await expect(page.locator('.home-motion-toggle')).toHaveCount(0);
   const form = page.getByRole('search', { name: 'Find venues and vendors' });
   await form.scrollIntoViewIfNeeded();
   await expect(form).toBeInViewport();
   await form.getByLabel('City', { exact: true }).selectOption('Goa');
-  await page.getByRole('button', { name: 'Resume animations', exact: true }).click();
-  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'running');
   await expect(form.getByLabel('City', { exact: true })).toHaveValue('Goa');
   await form.getByRole('button', { name: 'Find venues & vendors' }).click();
   await expect(page.locator('#filterCity')).toHaveValue('Goa');
@@ -102,7 +93,7 @@ test('changing reduced motion preferences stops effects and restores visible tex
   await openHome(page, testInfo);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'reduced');
-  await expect(page.locator('.home-motion-toggle')).toBeHidden();
+  await expect(page.locator('.home-motion-toggle')).toHaveCount(0);
   await expect(page.locator('.home-motion-progress')).toBeHidden();
   expect(await page.locator('.home-motion-word').evaluateAll(words =>
     words.every(word => getComputedStyle(word).opacity === '1' && getComputedStyle(word).transform === 'none')
@@ -110,7 +101,7 @@ test('changing reduced motion preferences stops effects and restores visible tex
   await expect(page.getByRole('search', { name: 'Find venues and vendors' })).toBeInViewport();
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'running');
-  await expect(page.getByRole('button', { name: 'Pause animations', exact: true })).toBeVisible();
+  await expect(page.locator('.home-motion-toggle')).toHaveCount(0);
 });
 
 test('photo panels open fully and decorative dividers do not block browsing', async ({ page }, testInfo) => {
@@ -144,7 +135,7 @@ test('photo panels open fully and decorative dividers do not block browsing', as
   await expect(page).toHaveURL(/\/event\.php\?type=Wedding$/);
 });
 
-test('mouse highlights and magnetic actions reset, and pausing clears decorative movement', async ({ page }, testInfo) => {
+test('mouse highlights and magnetic actions reset, and reduced motion clears decorations', async ({ page }, testInfo) => {
   await openHome(page, testInfo);
   const button = page.getByRole('button', { name: 'Find venues & vendors' });
   const card = page.locator('.vision-category-panel').first();
@@ -165,16 +156,14 @@ test('mouse highlights and magnetic actions reset, and pausing clears decorative
     expect(await button.evaluate(element => getComputedStyle(element).translate)).toBe('none');
     await expect(card.locator('.home-card-light')).toBeHidden();
   }
-  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
-  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'paused');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'reduced');
   for (const decoration of await page.locator('.home-photo-curtain, .home-card-light, .home-motion-divider, .home-portrait-trace').all()) {
     await expect(decoration).toBeHidden();
   }
   expect(await button.evaluate(element => getComputedStyle(element).translate)).toBe('none');
   expect(await card.locator('img').evaluate(image => getComputedStyle(image).clipPath)).toBe('none');
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'reduced');
-  await expect(page.locator('.home-motion-toggle')).toBeHidden();
+  await expect(page.locator('.home-motion-toggle')).toHaveCount(0);
 });
 
 test('headings, photos and dividers replay when revisited from both scroll directions', async ({ page }, testInfo) => {
@@ -227,7 +216,7 @@ test('headings, photos and dividers replay when revisited from both scroll direc
   expect(errors).toEqual([]);
 });
 
-test('hero and planning steps replay on back scroll and remain visible when motion is paused', async ({ page }, testInfo) => {
+test('hero and planning steps replay on back scroll and respect reduced motion', async ({ page }, testInfo) => {
   await openHome(page, testInfo);
   const heroWords = page.locator('h1 .home-motion-word');
   await expect.poll(() => heroWords.evaluateAll(words =>
@@ -257,8 +246,8 @@ test('hero and planning steps replay on back scroll and remain visible when moti
   await expect.poll(() => heroWords.evaluateAll(words =>
     words.some(word => Number(getComputedStyle(word).opacity) < .99)
   )).toBeTruthy();
-  await page.getByRole('button', { name: 'Pause animations', exact: true }).click();
-  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'paused');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('main')).toHaveAttribute('data-home-motion', 'reduced');
   await expect.poll(() => heroWords.evaluateAll(words =>
     words.every(word => getComputedStyle(word).opacity === '1')
   )).toBeTruthy();

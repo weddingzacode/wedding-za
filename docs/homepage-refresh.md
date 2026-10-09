@@ -15,8 +15,8 @@ Planning help links to the existing planning studio and contact page.
 Descriptions, dark-section headings and footer links have larger text or
 stronger contrast. Phone layouts keep search visible and use smaller card
 grids. Coordinated heading reveals, photo movement, card interactions and a
-scroll progress line add motion. Visitors can pause effects; their preference
-persists, and reduced-motion settings keep content visible. See
+scroll progress line add motion automatically, with no pause/resume button.
+System reduced-motion settings keep content visible. See
 `homepage-motion.md` for the animation behavior.
 
 ## Content and assets
@@ -37,7 +37,8 @@ Photo sources are recorded in `home-photo-credits.md`.
 
 Run the pinned `scripts/apply-homepage-refresh.php` from `~/public_html` after
 the header and city releases. It embeds 30 runtime files and the exact deployed
-baselines, including the earlier homepage and both animation releases. It validates every
+baselines, including the earlier homepage, both animation releases and the
+back-scroll release. It validates every
 destination and payload, then backs up originals
 privately outside the web root, stages all replacements and publishes them by
 rename. Unknown edits, unsafe paths or damaged payloads stop before publication.
@@ -57,11 +58,11 @@ edits, symlinks and corrupt payloads, and preservation of owner content.
 shortlists, occasion routes, phone/desktop fit from 320px to 1600px, compact
 stories, descriptive font sizes, heading contrast and reduced motion. The
 `tests/home-motion.spec.js` checks scroll progress, photo reveals, desktop
-pointer tilt, persistent pause/resume, working search while paused, and live
-changes to the reduced-motion preference. The
+pointer tilt, removal of the pause control, ignored legacy pause settings,
+working search and live changes to the reduced-motion preference. The
 browser suite also retains the shared navigation and 50-city discovery checks.
 
 Earlier header, city and policy installers are immutable release snapshots.
 Their QA validates and exercises those snapshots. Homepage installer QA checks
 the current homepage source, its deployed header baseline, the earlier
-homepage release and both animation releases.
+homepage release, both animation releases and the back-scroll release.

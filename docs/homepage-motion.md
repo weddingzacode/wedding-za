@@ -18,8 +18,8 @@ view. Background tabs and offscreen hero sections pause these repeating effects.
 The second animation pass adds two opening panels over each discovery photo,
 an image crop that opens into the full photograph, and lines with a turning
 diamond between sections. Section labels and descriptions enter together.
-The hero photo has a thin outline that draws once. On mouse devices, a soft
-highlight follows the pointer across cards and primary buttons move at most
+The hero photo has a thin outline that draws with the headline. On mouse
+devices, a soft highlight follows the pointer across cards and primary buttons move at most
 three pixels toward it. These effects reuse the controller and existing photo
 timelines, and the reveals finish in about a second.
 Headings, photographs, section lines and planning steps replay when they
@@ -40,30 +40,31 @@ external script is needed.
 
 ## Visitor preferences
 
-The fixed Pause animations button stops all homepage effects, restores visible
-content and destroys smooth scrolling. Resume animations starts them again.
-Only an on/off preference is stored in browser storage. If storage is blocked,
-the control still works for that visit.
+Homepage animations run automatically without a pause/resume button. Saved
+pause preferences from earlier releases are ignored, so visitors cannot be
+left with disabled animations and no way to resume them.
 
 System reduced-motion settings take priority, including changes during the
-visit. Decorative motion and the control are hidden while reduced motion is
-requested. Touch devices use native scrolling and do not receive pointer tilt.
+visit. Decorative motion stops, text remains visible and smooth scrolling is
+destroyed while reduced motion is requested. Touch devices use native scrolling
+and do not receive pointer tilt.
 When JavaScript or animation libraries are unavailable, the normal homepage
 content and native search form remain usable.
 
 ## Deployment and checks
 
 The backed-up homepage installer accepts the deployed header release, the
-earlier homepage update and both animation updates. It includes the two
-animation assets, updates
+earlier homepage update, both animation updates and the back-scroll update.
+It includes the two animation assets, updates
 script query versions and advances the service-worker cache. The installer QA
-verifies all four upgrade routes, rejection of unknown edits, preservation of owner
-content, private backups and repeated runs.
+verifies all five upgrade routes, rejection of unknown edits, preservation of
+owner content, private backups and repeated runs.
 
-Browser checks cover motion, pause/resume persistence, live reduced-motion
-changes, search, shortlists, caption fit and responsive layouts on desktop and
+Browser checks cover motion, removal of the pause control, ignored legacy pause
+settings, live reduced-motion changes, search, shortlists, caption fit and responsive layouts on desktop and
 phones. Photo panels must clear the images without intercepting links; pointer
-effects must reset and pause cleanly. Repeat-entry checks verify both scroll
-directions, the returning hero and steps, and pausing during a replay.
+effects must reset cleanly with reduced motion. Repeat-entry checks verify both
+scroll directions, the returning hero and steps, and changes to reduced motion
+during a replay.
 The rest of the navigation and catalogue
 suite runs in release CI.

@@ -61,12 +61,12 @@ try {
     }
     foreach ($manifest as $path => $versions) {
         $baselineCounts = [
-            'index.php' => 3,
-            'includes/footer.php' => 4,
-            'sw.js' => 4,
+            'index.php' => 4,
+            'includes/footer.php' => 5,
+            'sw.js' => 5,
             'assets/js/vision.js' => 2,
-            'assets/css/home-motion.css' => 2,
-            'assets/js/home-motion.js' => 3,
+            'assets/css/home-motion.css' => 3,
+            'assets/js/home-motion.js' => 4,
             'assets/css/home.css' => 2,
         ];
         wz_home_qa_assert(count($versions) === ($baselineCounts[$path] ?? 1), 'Verified deployment baselines: ' . $path);
@@ -172,9 +172,18 @@ try {
             'assets/css/home.css' => 1,
         ],
         'second-motion' => [
+            'index.php' => 3,
             'includes/footer.php' => 3,
             'sw.js' => 3,
+            'assets/css/home-motion.css' => 2,
             'assets/js/home-motion.js' => 2,
+        ],
+        'back-scroll' => [
+            'index.php' => 3,
+            'includes/footer.php' => 4,
+            'sw.js' => 4,
+            'assets/css/home-motion.css' => 2,
+            'assets/js/home-motion.js' => 3,
         ],
     ];
     foreach ($upgradeRoutes as $route => $baselineIndexes) {

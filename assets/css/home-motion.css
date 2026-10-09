@@ -290,49 +290,27 @@ body[data-page="home"] .vision-finale h2 .home-motion-word {
   transform-origin: left;
 }
 
-.home-motion-toggle {
-  position: fixed;
-  right: max(20px, env(safe-area-inset-right));
-  bottom: max(20px, env(safe-area-inset-bottom));
-  z-index: 120;
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 1px solid rgba(99, 89, 80, .22);
-  border-radius: 999px;
-  background: #fffdf8;
-  color: #661d31;
-  box-shadow: 0 6px 22px rgba(23, 18, 15, .12);
-  font: 600 12px/1.5 var(--v-sans);
-  cursor: pointer;
-}
-
-.home-motion-toggle:focus-visible {
-  outline: 2px solid #7b203b;
-  outline-offset: 4px;
-}
-
-.home-motion-toggle[hidden],
 .home-motion-progress[hidden] {
   display: none !important;
 }
 
-.home-motion-paused .home-refreshed *,
-.home-motion-paused .home-refreshed *::before,
-.home-motion-paused .home-refreshed *::after,
-.home-motion-paused .vision-finale * {
+.home-motion-reduced .home-refreshed *,
+.home-motion-reduced .home-refreshed *::before,
+.home-motion-reduced .home-refreshed *::after,
+.home-motion-reduced .vision-finale * {
   animation: none !important;
   transition: none !important;
 }
 
-.home-motion-paused .home-refreshed .home-motion-card,
-.home-motion-paused .home-refreshed .home-motion-card img,
-.home-motion-paused .hero-plan-dock > button > span {
+.home-motion-reduced .home-refreshed .home-motion-card,
+.home-motion-reduced .home-refreshed .home-motion-card img,
+.home-motion-reduced .hero-plan-dock > button > span {
   transform: none !important;
   scale: 1 !important;
   translate: none !important;
 }
 
-.home-motion-paused .home-magnetic-button {
+.home-motion-reduced .home-magnetic-button {
   translate: none !important;
 }
 
@@ -400,11 +378,6 @@ body[data-page="home"] .vision-finale h2 .home-motion-word {
     display: none;
   }
 
-  .home-motion-toggle {
-    right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    padding: 9px 13px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -415,7 +388,6 @@ body[data-page="home"] .vision-finale h2 .home-motion-word {
 
   .home-motion-glow,
   .home-motion-progress,
-  .home-motion-toggle,
   .home-photo-curtain,
   .home-card-light,
   .home-motion-divider,
