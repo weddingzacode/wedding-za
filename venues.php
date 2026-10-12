@@ -3,301 +3,168 @@
 require __DIR__ . '/includes/bootstrap.php';
 require __DIR__ . '/includes/components.php';
 require __DIR__ . '/includes/vendors.php';
+require_once __DIR__ . '/includes/venue-collection.php';
 
-$pageTitle = 'Wedding Venues';
-$pageDescription = 'Compare wedding venues across India by city, venue type, guest capacity, rooms, rating and price.';
+$pageTitle = 'Venues for Every Celebration | Weddingza';
+$pageDescription = 'Explore Jaipur hotels, resorts, palaces, banquet halls and lawns. Compare rooms and guest capacity, discover event spaces and call Weddingza on 9785005549.';
 $pageKey = 'venues';
-
-$city = trim((string)($_GET['city'] ?? ''));
-$type = trim((string)($_GET['type'] ?? ''));
-$minGuests = max(0, (int)($_GET['guests'] ?? 0));
-$minRooms = max(0, (int)($_GET['rooms'] ?? 0));
-$maxPrice = max(0, (int)($_GET['max_price'] ?? 0));
-$minRating = max(0, min(5, (float)($_GET['rating'] ?? 0)));
-$sort = (string)($_GET['sort'] ?? 'featured');
-
-$venues = array_values(
-    array_filter(
-        wz_public_vendors(),
-        function (array $venue) use (
-            $city,
-            $type,
-            $minGuests,
-            $minRooms,
-            $maxPrice,
-            $minRating
-        ): bool {
-            $isVenue =
-                ($venue['business_type'] ?? '') === 'venue'
-                || ($venue['category'] ?? '') === 'Venues';
-
-            if (!$isVenue) {
-                return false;
-            }
-
-            if (
-                $city !== ''
-                && strcasecmp(
-                    (string)($venue['city'] ?? ''),
-                    $city
-                ) !== 0
-            ) {
-                return false;
-            }
-
-            if (
-                $type !== ''
-                && stripos(
-                    (string)($venue['venue_type'] ?? ''),
-                    $type
-                ) === false
-                && stripos(
-                    implode(
-                        ' ',
-                        $venue['services'] ?? []
-                    ),
-                    $type
-                ) === false
-            ) {
-                return false;
-            }
-
-            $capacityMax = (int)($venue['capacity_max'] ?? 0);
-
-            if (
-                $minGuests > 0
-                && $capacityMax > 0
-                && $capacityMax < $minGuests
-            ) {
-                return false;
-            }
-
-            if (
-                $minRooms > 0
-                && (int)($venue['rooms'] ?? 0) < $minRooms
-            ) {
-                return false;
-            }
-
-            if (
-                $maxPrice > 0
-                && wz_money_number(
-                    (string)($venue['price'] ?? '0')
-                ) > $maxPrice
-            ) {
-                return false;
-            }
-
-            if (
-                $minRating > 0
-                && (float)($venue['rating'] ?? 0) < $minRating
-            ) {
-                return false;
-            }
-
-            return true;
-        }
-    )
-);
-
-usort(
-    $venues,
-    function (array $a, array $b) use ($sort): int {
-        return match ($sort) {
-            'rating' =>
-                (float)($b['rating'] ?? 0)
-                <=> (float)($a['rating'] ?? 0),
-            'price' =>
-                wz_money_number((string)($a['price'] ?? '0'))
-                <=> wz_money_number((string)($b['price'] ?? '0')),
-            'capacity' =>
-                (int)($b['capacity_max'] ?? 0)
-                <=> (int)($a['capacity_max'] ?? 0),
-            default =>
-                (int)!empty($b['featured'])
-                <=> (int)!empty($a['featured']),
-        };
-    }
-);
-
-$venueTypes = [];
-
-foreach (wz_public_vendors() as $venue) {
-    if (
-        ($venue['business_type'] ?? '') === 'venue'
-        || ($venue['category'] ?? '') === 'Venues'
-    ) {
-        $venueType = trim(
-            (string)($venue['venue_type'] ?? '')
-        );
-
-        if ($venueType !== '') {
-            $venueTypes[] = $venueType;
-        }
-    }
+$vcAllVenues = wz_collection_venues(wz_public_vendors());
+$vcQuery = substr(wz_collection_get('q'), 0, 120);
+$vcCity = wz_collection_get('city');
+$vcType = wz_collection_get('type');
+$vcEvent = wz_collection_get('event');
+$vcGuests = max(0, (int)wz_collection_get('guests'));
+$vcRooms = max(0, (int)wz_collection_get('rooms'));
+$vcMaxPrice = max(0, (int)wz_collection_get('max_price'));
+$vcPriceUnit = wz_collection_get('price_unit', 'function');
+if (!in_array($vcPriceUnit, ['function', 'plate'], true)) {
+    $vcPriceUnit = 'function';
 }
-
-$venueTypes = array_values(
-    array_unique($venueTypes)
-);
-
-sort($venueTypes);
-
+$vcRating = max(0, min(5, (float)wz_collection_get('rating')));
+$vcSort = wz_collection_get('sort', 'featured');
+$cities = $types = $events = [];
+foreach ($vcAllVenues as $venue) {
+    $cities[] = (string)($venue['city'] ?? '');
+    $types[] = (string)($venue['venue_type'] ?? 'Celebration venue');
+    $events = array_merge($events, $venue['events'] ?? []);
+}
+$vcOptions = function (array $values, string $first): array {
+    $values = array_values(array_unique(array_filter($values)));
+    sort($values);
+    return ['' => $first] + array_combine($values, $values);
+};
+$vcVenues = array_values(array_filter($vcAllVenues, function (array $venue) use ($vcQuery, $vcCity, $vcType, $vcEvent, $vcGuests, $vcRooms, $vcMaxPrice, $vcPriceUnit, $vcRating): bool {
+    $search = implode(' ', [$venue['name'] ?? '', $venue['city'] ?? '', $venue['locality'] ?? '', $venue['about'] ?? '']);
+    if ($vcQuery !== '' && stripos($search, $vcQuery) === false) return false;
+    if ($vcCity !== '' && strcasecmp((string)($venue['city'] ?? ''), $vcCity) !== 0) return false;
+    if ($vcType !== '' && strcasecmp((string)($venue['venue_type'] ?? 'Celebration venue'), $vcType) !== 0) return false;
+    if ($vcEvent !== '' && !in_array($vcEvent, $venue['events'] ?? [], true)) return false;
+    if ($vcGuests > 0 && (int)($venue['capacity_max'] ?? 0) < $vcGuests) return false;
+    if ($vcRooms > 0 && (int)($venue['rooms'] ?? 0) < $vcRooms) return false;
+    if ($vcRating > 0 && (float)($venue['rating'] ?? 0) < $vcRating) return false;
+    [$amount, $unit] = wz_collection_price($venue);
+    if ($vcMaxPrice > 0 && ($amount === null || $unit !== $vcPriceUnit || $amount > $vcMaxPrice)) return false;
+    return true;
+}));
+usort($vcVenues, function (array $a, array $b) use ($vcSort, $vcPriceUnit): int {
+    if ($vcSort === 'capacity') return (int)($b['capacity_max'] ?? 0) <=> (int)($a['capacity_max'] ?? 0);
+    if ($vcSort === 'rooms') return (int)($b['rooms'] ?? 0) <=> (int)($a['rooms'] ?? 0);
+    if ($vcSort === 'rating') return (float)($b['rating'] ?? 0) <=> (float)($a['rating'] ?? 0);
+    if ($vcSort === 'price') {
+        [$ap, $au] = wz_collection_price($a);
+        [$bp, $bu] = wz_collection_price($b);
+        return ($au === $vcPriceUnit && $ap !== null ? $ap : PHP_INT_MAX)
+            <=> ($bu === $vcPriceUnit && $bp !== null ? $bp : PHP_INT_MAX);
+    }
+    return (int)($a['collection_order'] ?? 1000) <=> (int)($b['collection_order'] ?? 1000);
+});
+$vcHasFilters = $vcQuery !== '' || $vcCity !== '' || $vcType !== '' || $vcEvent !== '' || $vcGuests || $vcRooms || $vcMaxPrice || $vcRating;
+$vcHero = '';
+foreach ($vcAllVenues as $venue) {
+    if (($venue['id'] ?? '') === 'the-gopal-bagh-resort-jaipur') $vcHero = (string)($venue['image'] ?? '');
+}
 require __DIR__ . '/includes/header.php';
 ?>
-
-<main>
-    <?php
-    wz_page_intro(
-        'VENUES',
-        'Find the place that<br><em>shapes the wedding.</em>',
-        'Search by city, scale, rooms, venue type, rating and starting price. Save the strongest options, then compare them side by side.'
-    );
-    ?>
-
-    <section class="section marketplace-filter-shell">
-        <div class="container">
-            <form method="get" class="marketplace-filter-card">
-                <div class="marketplace-filter-grid">
-                    <label>
-                        <span>City</span>
-                        <select name="city">
-                            <option value="">All cities</option>
-                            <?php foreach (wz_data('cities') as $option): ?>
-                                <option
-                                    value="<?= h((string)$option) ?>"
-                                    <?= $city === (string)$option ? 'selected' : '' ?>
-                                >
-                                    <?= h((string)$option) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
-
-                    <label>
-                        <span>Venue type</span>
-                        <select name="type">
-                            <option value="">All venue types</option>
-                            <?php foreach ($venueTypes as $option): ?>
-                                <option
-                                    value="<?= h($option) ?>"
-                                    <?= $type === $option ? 'selected' : '' ?>
-                                >
-                                    <?= h($option) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
-
-                    <label>
-                        <span>Guests</span>
-                        <input
-                            name="guests"
-                            type="number"
-                            min="0"
-                            value="<?= h($minGuests > 0 ? (string)$minGuests : '') ?>"
-                            placeholder="250"
-                        >
-                    </label>
-
-                    <label>
-                        <span>Rooms</span>
-                        <input
-                            name="rooms"
-                            type="number"
-                            min="0"
-                            value="<?= h($minRooms > 0 ? (string)$minRooms : '') ?>"
-                            placeholder="40"
-                        >
-                    </label>
-
-                    <label>
-                        <span>Max starting price</span>
-                        <input
-                            name="max_price"
-                            type="number"
-                            min="0"
-                            value="<?= h($maxPrice > 0 ? (string)$maxPrice : '') ?>"
-                            placeholder="500000"
-                        >
-                    </label>
-
-                    <label>
-                        <span>Min rating</span>
-                        <select name="rating">
-                            <option value="">Any rating</option>
-                            <?php foreach ([4.5,4,3.5,3] as $rating): ?>
-                                <option
-                                    value="<?= h((string)$rating) ?>"
-                                    <?= (float)$minRating === (float)$rating ? 'selected' : '' ?>
-                                >
-                                    <?= h((string)$rating) ?>+
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
+<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261012photos">
+<main class="vc-page">
+    <section class="vc-hero">
+        <div class="vc-shell vc-hero-grid">
+            <div class="vc-hero-copy">
+                <p class="vc-eyebrow"><span></span> THE WEDDINGZA VENUE COLLECTION</p>
+                <h1>Some places make<br><em>every moment</em><br>feel extraordinary.</h1>
+                <p class="vc-lead">A palace for your wedding. A garden for your Mehendi. A beautiful space for whatever you’re celebrating.</p>
+                <div class="vc-hero-actions">
+                    <a class="vc-btn" href="#venue-results">Find your setting <span aria-hidden="true">↗</span></a>
+                    <a class="vc-link" href="tel:+919785005549">Talk to Weddingza <span aria-hidden="true">↗</span></a>
                 </div>
+                <div class="vc-hero-note"><span aria-hidden="true">✦</span> Jaipur favourites. Thoughtful spaces. Celebrations of every size.</div>
+            </div>
+            <div class="vc-hero-art">
+                <?php if ($vcHero !== ''): ?>
+                    <img class="vc-hero-photo" src="<?= h($vcHero) ?>" alt="The Gopal Bagh & Resort, Jaipur" width="900" height="1100" fetchpriority="high" decoding="async">
+                    <span class="vc-art-caption">THE GOPAL BAGH & RESORT · JAIPUR</span>
+                <?php else: ?>
+                    <div class="vc-arch-scene" aria-hidden="true"><div class="vc-arch"><span>W</span></div></div>
+                    <span class="vc-art-caption">BEAUTIFUL BEGINNINGS · JAIPUR</span>
+                <?php endif; ?>
+                <div class="vc-art-note"><small>THE RIGHT SPACE FOR</small><strong>Your kind of<br><em>celebration.</em></strong><span>Indoor · Outdoor · Stay & celebrate</span></div>
+            </div>
+        </div>
+    </section>
 
-                <div class="vendor-filter-top" style="margin-top:16px;">
-                    <label style="display:grid;gap:7px;">
-                        <span class="eyebrow">SORT RESULTS</span>
-                        <select name="sort">
-                            <option value="featured" <?= $sort==='featured'?'selected':'' ?>>
-                                Wedding Za edit
-                            </option>
-                            <option value="rating" <?= $sort==='rating'?'selected':'' ?>>
-                                Highest rated
-                            </option>
-                            <option value="price" <?= $sort==='price'?'selected':'' ?>>
-                                Lowest starting price
-                            </option>
-                            <option value="capacity" <?= $sort==='capacity'?'selected':'' ?>>
-                                Highest capacity
-                            </option>
-                        </select>
-                    </label>
-
-                    <button class="pill-btn wine" type="submit">
-                        Find venues ↗
-                    </button>
+    <section class="vc-shell vc-search" aria-label="Find a venue">
+        <form method="get" action="venues.php#venue-results" id="vc-search-form">
+            <div class="vc-search-main">
+                <label class="vc-field vc-query"><span>VENUE OR NEIGHBOURHOOD</span><input name="q" type="search" maxlength="120" value="<?= h($vcQuery) ?>" placeholder="Try Jagatpura, Hari Van…"></label>
+                <?php wz_collection_select('city', 'CITY', $vcOptions($cities, 'All cities'), $vcCity); ?>
+                <label class="vc-field"><span>YOUR GUEST LIST</span><input name="guests" type="number" min="0" step="1" value="<?= $vcGuests ?: '' ?>" placeholder="Number of guests"></label>
+                <button class="vc-btn" type="submit">Explore venues <span aria-hidden="true">↗</span></button>
+            </div>
+            <details class="vc-filter-details" <?= $vcType || $vcEvent || $vcRooms || $vcMaxPrice || $vcRating ? 'open' : '' ?>>
+                <summary>Refine your search <span aria-hidden="true">+</span></summary>
+                <div class="vc-filter-grid">
+                    <?php wz_collection_select('type', 'VENUE TYPE', $vcOptions($types, 'All spaces'), $vcType); ?>
+                    <?php wz_collection_select('event', 'OCCASION', $vcOptions($events, 'Any celebration'), $vcEvent); ?>
+                    <label class="vc-field"><span>MINIMUM ROOMS</span><input name="rooms" type="number" min="0" step="1" value="<?= $vcRooms ?: '' ?>" placeholder="Rooms for your guests"></label>
+                    <label class="vc-field"><span>MAXIMUM PUBLISHED PRICE (₹)</span><input name="max_price" type="number" min="0" step="1" value="<?= $vcMaxPrice ?: '' ?>" placeholder="e.g. 1200000"></label>
+                    <?php wz_collection_select('price_unit', 'PRICE BASIS', ['function' => 'Per function / package', 'plate' => 'Per plate'], $vcPriceUnit); ?>
+                    <?php wz_collection_select('rating', 'MINIMUM RATING', ['' => 'Any rating', '4.5' => '4.5+', '4' => '4+', '3.5' => '3.5+'], $vcRating ? (string)$vcRating : ''); ?>
                 </div>
+                <p class="vc-small">Price filters use published rates on your selected basis. Guest capacities depend on the event layout.</p>
+                <button class="vc-btn vc-btn-small" type="submit">Apply filters ↗</button>
+            </details>
+            <input type="hidden" name="sort" value="<?= h($vcSort) ?>">
+        </form>
+    </section>
+
+    <section class="vc-shell vc-results" id="venue-results">
+        <div class="vc-results-head">
+            <div><p class="vc-eyebrow">FIND A PLACE THAT FEELS LIKE YOU</p><h2><?= count($vcVenues) ?> venues.<br><em>Endless possibilities.</em></h2></div>
+            <form method="get" action="venues.php#venue-results" class="vc-sort">
+                <?php foreach (['q','city','type','event','guests','rooms','max_price','price_unit','rating'] as $key): ?>
+                    <?php if (wz_collection_get($key) !== ''): ?><input type="hidden" name="<?= h($key) ?>" value="<?= h(wz_collection_get($key)) ?>"><?php endif; ?>
+                <?php endforeach; ?>
+                <?php wz_collection_select('sort', 'SORT BY', ['featured' => 'Weddingza collection', 'capacity' => 'Largest guest capacity', 'rooms' => 'Most guest rooms', 'price' => 'Lowest price on selected basis', 'rating' => 'Highest rated'], $vcSort); ?>
+                <button class="vc-link" type="submit">Apply ↗</button>
             </form>
         </div>
-    </section>
-
-    <section class="section paper-2">
-        <div class="container">
-            <div class="section-head">
-                <div>
-                    <span class="eyebrow">VENUE RESULTS</span>
-                    <h2>
-                        <?= h((string)count($venues)) ?>
-                        place<?= count($venues)===1?'':'s' ?>
-                        worth opening.
-                    </h2>
-                </div>
-
-                <a class="text-link" href="compare.php">
-                    Compare venues ↗
-                </a>
-            </div>
-
-            <div class="vendor-grid vendor-grid-v2">
-                <?php foreach ($venues as $venue): ?>
-                    <?php wz_vendor_card($venue); ?>
-                <?php endforeach; ?>
-            </div>
-
-            <?php if (!$venues): ?>
-                <div class="empty-state">
-                    <h3>No exact venue match yet.</h3>
-                    <p class="muted">
-                        Relax one filter or search another city.
-                    </p>
-                </div>
-            <?php endif; ?>
+        <?php if ($vcHasFilters): ?><div class="vc-active-filters"><span>Showing your filtered collection</span><a href="venues.php#venue-results">Clear all filters ×</a></div><?php endif; ?>
+        <div class="vc-grid">
+            <?php foreach ($vcVenues as $index => $venue): ?>
+                <?php
+                $url = wz_collection_detail_url($venue);
+                $amenities = $venue['amenities'] ?? $venue['services'] ?? [];
+                $capacity = $venue['capacity_label'] ?? (!empty($venue['capacity_max']) ? 'Up to ' . number_format((int)$venue['capacity_max']) : 'Ask venue');
+                $image = $venue['image'] ?? 'assets/images/image-fallback.svg';
+                ?>
+                <article class="vc-card" data-vc-reveal>
+                    <a class="vc-card-media <?= !empty($venue['illustrated']) ? 'vc-illustrated' : '' ?>" href="<?= h($url) ?>" aria-label="Explore <?= h($venue['name']) ?>">
+                        <img src="<?= h($image) ?>" alt="<?= h(!empty($venue['illustrated']) ? 'Illustrated cover for ' . $venue['name'] : $venue['name']) ?>" width="800" height="540" loading="lazy" decoding="async">
+                        <span class="vc-media-type"><?= h($venue['venue_type'] ?? 'Celebration venue') ?></span>
+                        <?php if (!empty($venue['illustrated'])): ?><span class="vc-media-caption">ILLUSTRATED VENUE COVER</span><?php endif; ?>
+                        <span class="vc-media-open" aria-hidden="true">↗</span>
+                    </a>
+                    <?php wz_venue_gallery($venue); ?>
+                    <div class="vc-card-body">
+                        <p class="vc-location"><span aria-hidden="true">⌖</span> <?= h($venue['locality'] ?? '') ?> · <?= h($venue['city'] ?? '') ?></p>
+                        <h3><a href="<?= h($url) ?>"><?= h($venue['name']) ?></a></h3>
+                        <p class="vc-card-summary"><?= h($venue['summary'] ?? substr((string)($venue['about'] ?? ''), 0, 170)) ?></p>
+                        <div class="vc-facts"><div><strong><?= h($capacity) ?></strong><span>guest capacity</span></div><div><strong><?= !empty($venue['rooms']) ? number_format((int)$venue['rooms']) : 'Enquire' ?></strong><span>guest rooms</span></div><div><strong><?= !empty($venue['collection_detail']) ? count($venue['spaces'] ?? []) : 'Explore' ?></strong><span>event spaces</span></div></div>
+                        <div class="vc-tags"><?php foreach (array_slice($amenities, 0, 3) as $amenity): ?><span><?= h((string)$amenity) ?></span><?php endforeach; ?></div>
+                        <?php if (!empty($venue['collection_detail'])): ?>
+                            <details class="vc-card-details"><summary>Spaces & venue highlights <span aria-hidden="true">+</span></summary><ul><?php foreach ($venue['spaces'] as $space): ?><li><strong><?= h($space['name']) ?></strong><span><?= h($space['capacity']) ?></span></li><?php endforeach; ?></ul><a class="vc-link" href="<?= h($url) ?>">Read the full venue guide ↗</a></details>
+                        <?php endif; ?>
+                        <?php if ((int)($venue['reviews'] ?? 0) > 0): ?><p class="vc-small">★ <?= h((string)($venue['rating'] ?? '')) ?> · <?= (int)$venue['reviews'] ?> reviews</p><?php endif; ?>
+                        <div class="vc-card-bottom"><div><small><?= !empty($venue['starting_price']) ? 'QUOTED PACKAGE' : 'PLAN YOUR CELEBRATION' ?></small><strong><?= h($venue['price'] ?? 'Request pricing') ?></strong></div><a class="vc-link" href="<?= h($url) ?>">View venue ↗</a></div>
+                        <div class="vc-card-actions"><a class="vc-btn vc-call" href="tel:+919785005549" aria-label="Call Weddingza on 9785005549 about <?= h($venue['name']) ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 5 4c-2 5 4 13 10 15l4-3-3-4-3 2-4-4 2-3Z"/></svg><span class="vc-call-label">Call Weddingza</span><span class="vc-call-number" aria-hidden="true">9785005549</span></a><a class="vc-btn vc-btn-outline" href="<?= h($url) ?>#enquire">Enquire <span aria-hidden="true">↗</span></a></div>
+                    </div>
+                </article>
+            <?php endforeach; ?>
         </div>
+        <?php if (!$vcVenues): ?><div class="vc-empty"><p class="vc-eyebrow">LET’S FIND ANOTHER POSSIBILITY</p><h2>No venues match these filters.</h2><p>Try a different guest count, neighbourhood or budget.</p><a class="vc-btn" href="venues.php#venue-results">Reset filters ↗</a></div><?php endif; ?>
+        <div class="vc-concierge" data-vc-reveal><div><p class="vc-eyebrow">A LITTLE HELP GOES A LONG WAY</p><h2>Your celebration.<br><em>Our local know-how.</em></h2><p>Tell us your dates, guest list and the kind of space you love. Weddingza can help you explore your options.</p></div><a class="vc-btn vc-btn-light" href="tel:+919785005549">Call Weddingza · 9785005549 ↗</a></div>
     </section>
+<?php wz_venue_gallery_dialog(); ?>
 </main>
-
+<script defer src="assets/js/venue-collection.js?v=20261012photos"></script>
 <?php require __DIR__ . '/includes/footer.php'; ?>
