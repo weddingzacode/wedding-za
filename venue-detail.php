@@ -103,6 +103,7 @@ $vcMapQuery = $vcVenue['name'] . ', ' . $vcVenue['locality'] . ', ' . $vcVenue['
             </aside>
         </div>
     </div>
+<?php wz_venue_gallery_dialog(); ?>
 </main>
 <script defer src="assets/js/venue-collection.js?v=20261012photos"></script>
 <?php require __DIR__ . '/includes/footer.php'; ?>
