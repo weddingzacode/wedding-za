@@ -302,3 +302,16 @@ test('new venue enquiries submit the venue category, identity and chosen functio
   expect(fields.vendor).toBe('Urban Suites Blusalzz');
   expect(fields.topic).toBe('Haldi');
 });
+
+test('the fixed header leaves the venue introduction and profile breadcrumb visible', async ({ page }) => {
+  for (const [route, selector] of [
+    ['/venues.php', '.vc-hero-copy .vc-eyebrow'],
+    ['/venue-detail.php?id=golden-eagle-wizowll-jaipur', '.vc-breadcrumb'],
+  ]) {
+    await page.goto(route);
+    await expect(page.locator('#preloader')).toBeHidden();
+    const header = await page.locator('#siteHeader .vision-nav').boundingBox();
+    const content = await page.locator(selector).boundingBox();
+    expect(content.y).toBeGreaterThanOrEqual(header.y + header.height);
+  }
+});

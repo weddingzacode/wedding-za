@@ -155,7 +155,7 @@ require __DIR__ . '/includes/header.php';
                             <button class="heart-btn-static" type="button" data-shortlist="<?= h((string)$venue['id']) ?>" aria-label="Save <?= h((string)$venue['name']) ?>" aria-pressed="false">♡ Save to shortlist</button>
                             <button type="button" data-compare-venue="<?= h((string)$venue['id']) ?>" data-compare-name="<?= h((string)$venue['name']) ?>" aria-label="Compare <?= h((string)$venue['name']) ?>">Compare +</button>
                         </div>
-                        <p class="vc-location"><span aria-hidden="true">⌖</span> <?= h($venue['locality'] ?? '') ?> · <?= h($venue['city'] ?? '') ?></p>
+                        <p class="vc-location"><svg class="vc-location-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> <?= h($venue['locality'] ?? '') ?> · <?= h($venue['city'] ?? '') ?></p>
                         <h3><a href="<?= h($url) ?>"><?= h($venue['name']) ?></a></h3>
                         <p class="vc-card-summary"><?= h($venue['summary'] ?? substr((string)($venue['about'] ?? ''), 0, 170)) ?></p>
                         <div class="vc-facts"><div><strong><?= h($capacity) ?></strong><span>guest capacity</span></div><div><strong><?= !empty($venue['rooms']) ? number_format((int)$venue['rooms']) : 'Enquire' ?></strong><span>guest rooms</span></div><div><strong><?= !empty($venue['collection_detail']) ? count($venue['spaces'] ?? []) : 'Explore' ?></strong><span>event spaces</span></div></div>

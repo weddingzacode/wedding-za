@@ -7,6 +7,7 @@
     color: var(--vc-ink);
     background: var(--vc-paper);
     font-family: Manrope, Arial, sans-serif;
+    padding-top: 104px;
     padding-bottom: 30px;
 }
 .vc-page *, .vc-page *::before, .vc-page *::after { box-sizing: border-box; }
@@ -102,6 +103,7 @@
 .vc-card-body { padding: 26px; }
 .vc-page .vc-location { color: var(--vc-muted); font-size: 10px; line-height: 1.7; }
 .vc-location > span { margin-right: 4px; color: var(--vc-wine); }
+.vc-location-icon { width: 13px; height: 13px; margin-right: 4px; vertical-align: -2px; fill: none; stroke: var(--vc-wine); stroke-width: 1.7; }
 .vc-card h3 { font-size: 32px; line-height: 1.06; margin: 13px 0; }
 .vc-card h3 a:hover { color: var(--vc-wine); }
 .vc-page .vc-card-summary { color: var(--vc-muted); font-size: 12px; line-height: 1.8; min-height: 43px; }
@@ -218,6 +220,7 @@
     .vc-detail-section h2 { font-size: 31px; }
 }
 @media (max-width: 420px) {
+    .vc-page { padding-top: 86px; }
     .vc-hero-copy h1 { font-size: 44px; }
     .vc-hero-actions { gap: 16px; }
     .vc-hero-art { height: 285px; }
