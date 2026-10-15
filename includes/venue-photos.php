@@ -1,15 +1,41 @@
 <?php
 declare(strict_types=1);
+/**
+ * Resolves original image-archive paths, including common cPanel nested ZIP extraction.
+ * Returns browser-relative paths for files that physically exist on this server only.
+ */
+function wz_venue_photo_url(string $source): ?string {
+    static $cache=[];
+    $source=ltrim(str_replace('\\', '/', $source), '/');
+    if(array_key_exists($source,$cache))return $cache[$source];
+    if(!preg_match('~^assets/images/venues/collection-photos/[a-z0-9-]+/[0-9]{3}\.(?:webp|jpg|jpeg|png)$~i',$source))
+        return $cache[$source]=null;
+    $root=dirname(__DIR__).'/';
+    foreach(['','UPLOAD/','assets/','assets/images/','assets/images/venues/','assets/images/venues/collection-photos/','assets/images/venues/collection-photos/UPLOAD/','Weddingza-Venue-221-Photos-For-cPanel/'] as $prefix) {
+        $relative=$prefix.$source;
+        if(is_file($root.$relative))return $cache[$source]=$relative;
+    }
+    return $cache[$source]=null;
+}
 function wz_venue_photo_records(): array {
     static $records=null;
-    if($records===null) {
-        $file=__DIR__.'/../assets/data/venue-photos.json';
-        $raw=is_file($file)?json_decode((string)file_get_contents($file),true):[];
-        // Until the actual photo archive has been installed, do not show broken images.
-        $records=array_values(array_filter(is_array($raw)?$raw:[],static function(array $entry):bool {
-            $first=$entry['image']??'';
-            return $first!=='' && is_file(__DIR__.'/../'.ltrim($first,'/'));
-        }));
+    if($records!==null)return $records;
+    $file=__DIR__.'/../assets/data/venue-photos.json';
+    $all=is_file($file)?json_decode((string)file_get_contents($file),true):null;
+    $records=[];
+    foreach(is_array($all)?$all:[] as $entry) {
+        if(!is_array($entry)||empty($entry['id'])||empty($entry['name'])||!is_array($entry['images']??null))continue;
+        $resolved=[];
+        foreach($entry['images'] as $photo) {
+            $url=is_string($photo)?wz_venue_photo_url($photo):null;
+            if($url!==null&&!in_array($url,$resolved,true))$resolved[]=$url;
+        }
+        if(!$resolved)continue;
+        $preferred=wz_venue_photo_url((string)($entry['image']??''));
+        $entry['image']=$preferred??$resolved[0];
+        $entry['images']=$resolved;
+        $entry['aliases']=is_array($entry['aliases']??null)?$entry['aliases']:[];
+        $records[]=$entry;
     }
     return $records;
 }
