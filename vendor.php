@@ -2,9 +2,16 @@
     require_once __DIR__ . '/includes/bootstrap.php';
     require_once __DIR__ . '/includes/components.php';
     require_once __DIR__ . '/includes/vendors.php';
+    require_once __DIR__ . '/includes/venue-collection.php';
     require_once __DIR__ . '/includes/marketplace.php';
     require_once __DIR__ . '/includes/media.php';
     $id=(string)($_GET['id']??'amber-courtyard');
+    foreach (wz_collection_venues(wz_public_vendors()) as $collectionVenue) {
+        if ((string)$collectionVenue['id'] === $id && !empty($collectionVenue['collection_detail'])) {
+            header('Location: ' . wz_collection_detail_url($collectionVenue));
+            exit;
+        }
+    }
     $v=wz_public_vendor($id)??(wz_public_vendors()[0]??null);
     if(!$v) {
     http_response_code(404);

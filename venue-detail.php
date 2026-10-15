@@ -19,7 +19,7 @@ if (!$vcVenue) {
     $pageKey = 'venues';
     require __DIR__ . '/includes/header.php';
     ?>
-    <link rel="stylesheet" href="assets/css/venue-collection.css?v=20261010">
+    <link rel="stylesheet" href="assets/css/venue-collection.css?v=20261015">
     <main class="vc-page"><div class="vc-shell vc-empty"><h1>Venue not found.</h1><p>Explore the collection to find another setting.</p><a class="vc-btn" href="venues.php">Browse venues ↗</a></div></main>
     <?php
     require __DIR__ . '/includes/footer.php';
@@ -29,13 +29,13 @@ if (empty($vcVenue['collection_detail'])) {
     header('Location: vendor.php?id=' . rawurlencode((string)$vcVenue['id']));
     exit;
 }
-$pageTitle = $vcVenue['name'] . ', Jaipur | Weddingza';
+$pageTitle = $vcVenue['name'] . ', ' . $vcVenue['city'] . ' | Weddingza';
 $pageDescription = $vcVenue['summary'];
 $pageKey = 'venues';
 require __DIR__ . '/includes/header.php';
 $vcMapQuery = $vcVenue['name'] . ', ' . $vcVenue['locality'] . ', ' . $vcVenue['city'];
 ?>
-<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261010">
+<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261015">
 <main class="vc-page">
     <div class="vc-shell">
         <section class="vc-detail-heading">
@@ -44,6 +44,10 @@ $vcMapQuery = $vcVenue['name'] . ', ' . $vcVenue['locality'] . ', ' . $vcVenue['
             <h1><?= h($vcVenue['name']) ?></h1>
             <p class="vc-location"><?= h($vcVenue['locality']) ?> · Jaipur, Rajasthan</p>
             <div class="vc-hero-actions"><a class="vc-btn" href="tel:+919785005549">Call Weddingza · 9785005549 ↗</a><a class="vc-link" href="#enquire">Ask about your celebration ↗</a></div>
+            <div class="vc-save-actions">
+                <button class="heart-btn-static" type="button" data-shortlist="<?= h((string)$vcVenue['id']) ?>" aria-label="Save <?= h((string)$vcVenue['name']) ?>" aria-pressed="false">♡ Save to shortlist</button>
+                <button type="button" data-compare-venue="<?= h((string)$vcVenue['id']) ?>" data-compare-name="<?= h((string)$vcVenue['name']) ?>" aria-label="Compare <?= h((string)$vcVenue['name']) ?>">Compare +</button>
+            </div>
         </section>
         <section class="vc-detail-hero" aria-label="Venue highlights">
             <img src="<?= h($vcVenue['image']) ?>" alt="<?= h(!empty($vcVenue['illustrated']) ? 'Illustrated cover for ' . $vcVenue['name'] : $vcVenue['name']) ?>" width="800" height="540" decoding="async" fetchpriority="high">
@@ -87,13 +91,14 @@ $vcMapQuery = $vcVenue['name'] . ', ' . $vcVenue['locality'] . ', ' . $vcVenue['
                 <form class="form-stack" data-async action="api/lead.php" method="post">
                     <input type="hidden" name="type" value="vendor-enquiry">
                     <input type="hidden" name="vendor" value="<?= h($vcVenue['name']) ?>">
+                    <input type="hidden" name="category" value="Venues">
                     <input class="hp-field" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">
                     <label class="vc-field"><span>YOUR NAME</span><input name="name" autocomplete="name" maxlength="120" required></label>
                     <label class="vc-field"><span>PHONE / WHATSAPP</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="25" required></label>
-                    <label class="vc-field"><span>YOUR OCCASION</span><select name="topic" required><option value="">Choose your celebration</option><?php foreach ($vcVenue['events'] as $occasion): ?><option><?= h($occasion) ?></option><?php endforeach; ?></select></label>
+                    <label class="vc-field"><span>YOUR OCCASION</span><select name="topic" aria-label="YOUR OCCASION" required><option value="">Choose your celebration</option><?php foreach ($vcVenue['events'] as $occasion): ?><option><?= h($occasion) ?></option><?php endforeach; ?></select></label>
                     <label class="vc-field"><span>EVENT DATE</span><input name="event_date" type="date" min="<?= date('Y-m-d') ?>"></label>
                     <input type="hidden" name="city" value="<?= h($vcVenue['city']) ?>">
-                    <label class="vc-field"><span>TELL US YOUR PLANS</span><textarea name="message" maxlength="2000" placeholder="Guest count, rooms, functions and budget…"></textarea></label>
+                    <label class="vc-field"><span>TELL US YOUR PLANS</span><textarea name="message" maxlength="1500" placeholder="Guest count, rooms, functions and budget…"></textarea></label>
                     <button class="vc-btn" type="submit">Request pricing & availability ↗</button>
                     <div class="success-box" role="status" aria-live="polite"></div>
                 </form>
@@ -102,5 +107,5 @@ $vcMapQuery = $vcVenue['name'] . ', ' . $vcVenue['locality'] . ', ' . $vcVenue['
         </div>
     </div>
 </main>
-<script defer src="assets/js/venue-collection.js?v=20261010"></script>
+<script defer src="assets/js/venue-collection.js?v=20261015"></script>
 <?php require __DIR__ . '/includes/footer.php'; ?>

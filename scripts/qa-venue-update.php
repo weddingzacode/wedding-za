@@ -119,12 +119,21 @@ function wz_venue_update_qa_remove(string $directory): void
 
 try {
     $files = $payload['files'];
+    $collectionSource = file_get_contents($root . '/scripts/apply-venue-collection.php');
+    $collectionStart = strpos($collectionSource, $marker) + strlen($marker);
+    $collectionEnd = strpos($collectionSource, "\nWZ_VENUE_PAYLOAD", $collectionStart);
+    $collection = json_decode(substr($collectionSource, $collectionStart, $collectionEnd - $collectionStart), true, 512, JSON_THROW_ON_ERROR);
     $seeds = json_decode(wz_venue_update_qa_decode($payload['venues']), true, 512, JSON_THROW_ON_ERROR);
     wz_venue_update_qa_assert(count($files) === 35 && count($seeds) === 2, 'The release contains 35 runtime files and two venue additions');
 
     foreach ($files as $path => $entry) {
         $source = wz_venue_update_qa_decode($entry);
-        wz_venue_update_qa_assert(hash_file('sha256', $root . '/' . $path) === $entry['sha256'], 'Installer matches source: ' . $path);
+        $currentHash = hash_file('sha256', $root . '/' . $path);
+        $superseding = $collection['files'][$path] ?? null;
+        $recognizedUpgrade = $superseding
+            && $superseding['sha256'] === $currentHash
+            && in_array($entry['sha256'], array_column($superseding['baselines'], 'sha256'), true);
+        wz_venue_update_qa_assert($currentHash === $entry['sha256'] || $recognizedUpgrade, 'Installer matches source or its recognized collection upgrade: ' . $path);
 
         foreach ($entry['baselines'] as $version) {
             if ($version['sha256'] !== null) {

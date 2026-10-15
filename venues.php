@@ -4,6 +4,7 @@ require __DIR__ . '/includes/bootstrap.php';
 require __DIR__ . '/includes/components.php';
 require __DIR__ . '/includes/vendors.php';
 require_once __DIR__ . '/includes/venue-collection.php';
+require_once __DIR__ . '/includes/cities.php';
 
 $pageTitle = 'Venues for Every Celebration | Weddingza';
 $pageDescription = 'Explore Jaipur hotels, resorts, palaces, banquet halls and lawns. Compare rooms and guest capacity, discover event spaces and call Weddingza on 9785005549.';
@@ -22,7 +23,8 @@ if (!in_array($vcPriceUnit, ['function', 'plate'], true)) {
 }
 $vcRating = max(0, min(5, (float)wz_collection_get('rating')));
 $vcSort = wz_collection_get('sort', 'featured');
-$cities = $types = $events = [];
+$cities = array_column(wz_city_catalogue(), 'name');
+$types = $events = [];
 foreach ($vcAllVenues as $venue) {
     $cities[] = (string)($venue['city'] ?? '');
     $types[] = (string)($venue['venue_type'] ?? 'Celebration venue');
@@ -59,13 +61,17 @@ usort($vcVenues, function (array $a, array $b) use ($vcSort, $vcPriceUnit): int 
     return (int)($a['collection_order'] ?? 1000) <=> (int)($b['collection_order'] ?? 1000);
 });
 $vcHasFilters = $vcQuery !== '' || $vcCity !== '' || $vcType !== '' || $vcEvent !== '' || $vcGuests || $vcRooms || $vcMaxPrice || $vcRating;
+$vcTotal = count($vcVenues);
+$vcPages = max(1, (int)ceil($vcTotal / 12));
+$vcPage = max(1, min($vcPages, (int)wz_collection_get('page', '1')));
+$vcVenues = array_slice($vcVenues, ($vcPage - 1) * 12, 12);
 $vcHero = '';
 foreach ($vcAllVenues as $venue) {
     if (($venue['id'] ?? '') === 'the-gopal-bagh-resort-jaipur') $vcHero = (string)($venue['image'] ?? '');
 }
 require __DIR__ . '/includes/header.php';
 ?>
-<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261010">
+<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261015">
 <main class="vc-page">
     <section class="vc-hero">
         <div class="vc-shell vc-hero-grid">
@@ -119,7 +125,7 @@ require __DIR__ . '/includes/header.php';
 
     <section class="vc-shell vc-results" id="venue-results">
         <div class="vc-results-head">
-            <div><p class="vc-eyebrow">FIND A PLACE THAT FEELS LIKE YOU</p><h2><?= count($vcVenues) ?> venues.<br><em>Endless possibilities.</em></h2></div>
+            <div><p class="vc-eyebrow">FIND A PLACE THAT FEELS LIKE YOU</p><h2><?= $vcTotal ?> venues.<br><em>Endless possibilities.</em></h2></div>
             <form method="get" action="venues.php#venue-results" class="vc-sort">
                 <?php foreach (['q','city','type','event','guests','rooms','max_price','price_unit','rating'] as $key): ?>
                     <?php if (wz_collection_get($key) !== ''): ?><input type="hidden" name="<?= h($key) ?>" value="<?= h(wz_collection_get($key)) ?>"><?php endif; ?>
@@ -137,7 +143,7 @@ require __DIR__ . '/includes/header.php';
                 $capacity = $venue['capacity_label'] ?? (!empty($venue['capacity_max']) ? 'Up to ' . number_format((int)$venue['capacity_max']) : 'Ask venue');
                 $image = $venue['image'] ?? 'assets/images/image-fallback.svg';
                 ?>
-                <article class="vc-card" data-vc-reveal>
+                <article class="vc-card" data-vendor-id="<?= h((string)$venue['id']) ?>" data-vc-reveal>
                     <a class="vc-card-media <?= !empty($venue['illustrated']) ? 'vc-illustrated' : '' ?>" href="<?= h($url) ?>" aria-label="Explore <?= h($venue['name']) ?>">
                         <img src="<?= h($image) ?>" alt="<?= h(!empty($venue['illustrated']) ? 'Illustrated cover for ' . $venue['name'] : $venue['name']) ?>" width="800" height="540" loading="lazy" decoding="async">
                         <span class="vc-media-type"><?= h($venue['venue_type'] ?? 'Celebration venue') ?></span>
@@ -145,6 +151,10 @@ require __DIR__ . '/includes/header.php';
                         <span class="vc-media-open" aria-hidden="true">↗</span>
                     </a>
                     <div class="vc-card-body">
+                        <div class="vc-save-actions">
+                            <button class="heart-btn-static" type="button" data-shortlist="<?= h((string)$venue['id']) ?>" aria-label="Save <?= h((string)$venue['name']) ?>" aria-pressed="false">♡ Save to shortlist</button>
+                            <button type="button" data-compare-venue="<?= h((string)$venue['id']) ?>" data-compare-name="<?= h((string)$venue['name']) ?>" aria-label="Compare <?= h((string)$venue['name']) ?>">Compare +</button>
+                        </div>
                         <p class="vc-location"><span aria-hidden="true">⌖</span> <?= h($venue['locality'] ?? '') ?> · <?= h($venue['city'] ?? '') ?></p>
                         <h3><a href="<?= h($url) ?>"><?= h($venue['name']) ?></a></h3>
                         <p class="vc-card-summary"><?= h($venue['summary'] ?? substr((string)($venue['about'] ?? ''), 0, 170)) ?></p>
@@ -160,9 +170,16 @@ require __DIR__ . '/includes/header.php';
                 </article>
             <?php endforeach; ?>
         </div>
+        <?php if ($vcPages > 1): ?>
+            <nav class="vc-pagination" aria-label="Venue results pages">
+                <?php for ($number = 1; $number <= $vcPages; $number++): ?>
+                    <a href="venues.php?<?= h(http_build_query(array_replace($_GET, ['page' => $number]))) ?>#venue-results" <?= $number === $vcPage ? 'aria-current="page"' : '' ?>><?= $number ?></a>
+                <?php endfor; ?>
+            </nav>
+        <?php endif; ?>
         <?php if (!$vcVenues): ?><div class="vc-empty"><p class="vc-eyebrow">LET’S FIND ANOTHER POSSIBILITY</p><h2>No venues match these filters.</h2><p>Try a different guest count, neighbourhood or budget.</p><a class="vc-btn" href="venues.php#venue-results">Reset filters ↗</a></div><?php endif; ?>
         <div class="vc-concierge" data-vc-reveal><div><p class="vc-eyebrow">A LITTLE HELP GOES A LONG WAY</p><h2>Your celebration.<br><em>Our local know-how.</em></h2><p>Tell us your dates, guest list and the kind of space you love. Weddingza can help you explore your options.</p></div><a class="vc-btn vc-btn-light" href="tel:+919785005549">Call Weddingza · 9785005549 ↗</a></div>
     </section>
 </main>
-<script defer src="assets/js/venue-collection.js?v=20261010"></script>
+<script defer src="assets/js/venue-collection.js?v=20261015"></script>
 <?php require __DIR__ . '/includes/footer.php'; ?>

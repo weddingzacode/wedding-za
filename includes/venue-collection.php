@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/venue-directory.php';
+
 /* This overlay reads the current catalogue without replacing site.json or CRM data. */
 function wz_collection_venues(array $existing): array
 {
@@ -29,6 +31,19 @@ function wz_collection_venues(array $existing): array
 
         $original = $match !== null ? $venues[$match] : [];
         $record = array_replace($original, $addition);
+        // A published catalogue/CRM record remains authoritative for its own details.
+        foreach (['name', 'city', 'locality', 'venue_type', 'about', 'rating', 'reviews', 'verified', 'featured'] as $field) {
+            if (isset($original[$field]) && $original[$field] !== '') {
+                $record[$field] = $original[$field];
+            }
+        }
+        if ((int)($original['rooms'] ?? 0) > 0) {
+            $record['rooms'] = $original['rooms'];
+        }
+        if (wz_venue_capacity($original) > 0) {
+            $record['capacity_max'] = wz_venue_capacity($original);
+            $record['capacity_label'] = 'Up to ' . number_format($record['capacity_max']);
+        }
         $record['id'] = $original['id'] ?? $addition['id'];
         $record['category'] = 'Venues';
         $record['business_type'] = 'venue';
@@ -42,6 +57,12 @@ function wz_collection_venues(array $existing): array
         $record['price'] = $addition['starting_price'] !== null
             ? '₹11.50 lakh / function'
             : 'Request pricing';
+        [$originalAmount, $originalUnit] = wz_collection_price($original);
+        if ($originalAmount !== null) {
+            $record['price'] = $original['price'];
+            $record['starting_price'] = $originalAmount;
+            $record['price_unit'] = $originalUnit;
+        }
         if ($match !== null) {
             $venues[$match] = $record;
         } else {
@@ -49,7 +70,32 @@ function wz_collection_venues(array $existing): array
         }
     }
 
+    foreach ($venues as &$venue) {
+        $venue['capacity_max'] = wz_venue_capacity($venue);
+        $venue['capacity_label'] ??= $venue['capacity_max'] > 0
+            ? 'Up to ' . number_format($venue['capacity_max'])
+            : 'Ask venue';
+        $venue['capacity'] ??= $venue['capacity_label'] . ' guests';
+        $venue['rating'] ??= 0;
+        $venue['reviews'] ??= 0;
+    }
+    unset($venue);
+
     return array_values($venues);
+}
+
+function wz_collection_catalogue(array $existing): array
+{
+    $venues = array_column(wz_collection_venues($existing), null, 'id');
+    foreach ($existing as &$record) {
+        $id = (string)$record['id'];
+        if (isset($venues[$id])) {
+            $record = $venues[$id];
+            unset($venues[$id]);
+        }
+    }
+    unset($record);
+    return array_merge($existing, array_values($venues));
 }
 
 function wz_collection_detail_url(array $venue): string
@@ -88,7 +134,7 @@ function wz_collection_select(string $name, string $label, array $options, strin
     ?>
     <label class="vc-field">
         <span><?= h($label) ?></span>
-        <select name="<?= h($name) ?>">
+        <select name="<?= h($name) ?>" aria-label="<?= h($label) ?>">
             <?php foreach ($options as $value => $text): ?>
                 <option value="<?= h((string)$value) ?>" <?= (string)$value === $current ? 'selected' : '' ?>><?= h((string)$text) ?></option>
             <?php endforeach; ?>

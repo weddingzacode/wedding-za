@@ -1,4 +1,4 @@
-/* Native scrolling and small, one-time reveals keep the directory responsive. */
+/* Native scrolling, repeatable reveals and the existing shortlist controls. */
 (() => {
     'use strict';
     const page = document.querySelector('.vc-page');
@@ -7,43 +7,42 @@
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const cards = [...page.querySelectorAll('[data-vc-reveal]')];
     let observer;
-    const revealEverything = () => {
-        page.classList.remove('vc-motion');
-        cards.forEach(card => card.classList.remove('vc-pending'));
+    const resetMotion = () => {
         observer?.disconnect();
+        page.classList.remove('vc-motion');
+        cards.forEach(card => card.classList.remove('vc-visible'));
     };
 
-    if (!reduceMotion.matches && 'IntersectionObserver' in window) {
+    const setupMotion = () => {
+        resetMotion();
+        if (reduceMotion.matches || !('IntersectionObserver' in window)) return;
         try {
             observer = new IntersectionObserver(entries => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.remove('vc-pending');
-                        observer.unobserve(entry.target);
-                    }
+                    entry.target.classList.toggle('vc-visible', entry.isIntersecting);
                 });
-            }, { threshold: 0.05, rootMargin: '0px 0px 70px 0px' });
-            page.classList.add('vc-motion');
+            }, { threshold: 0.02, rootMargin: '0px 0px -20px 0px' });
             cards.forEach(card => {
-                /* Keep cards already in view visible, avoiding flashes on load. */
-                if (card.getBoundingClientRect().top > window.innerHeight) {
-                    card.classList.add('vc-pending');
-                    observer.observe(card);
-                }
+                const box = card.getBoundingClientRect();
+                card.classList.toggle('vc-visible', box.bottom > 0 && box.top < window.innerHeight);
+                observer.observe(card);
             });
-            window.setTimeout(revealEverything, 7000);
+            page.classList.add('vc-motion');
         } catch (_) {
-            revealEverything();
+            resetMotion();
         }
-    }
-    reduceMotion.addEventListener?.('change', revealEverything);
+    };
+    setupMotion();
+    reduceMotion.addEventListener?.('change', setupMotion);
 
     page.querySelectorAll('img').forEach(img => {
-        img.addEventListener('error', () => {
+        const fallback = () => {
             if (img.dataset.fallbackApplied) return;
             img.dataset.fallbackApplied = '1';
             img.src = 'assets/images/venues/collection-fallback.svg';
             img.alt = 'Illustrated venue cover';
-        });
+        };
+        img.addEventListener('error', fallback);
+        if (img.complete && img.naturalWidth === 0) fallback();
     });
 })();

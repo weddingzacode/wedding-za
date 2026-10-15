@@ -28,6 +28,7 @@ $venueMapQuery = $venueAddress !== ''
                 <p class="venue-location"><?= h((string)($v['locality'] ?? '')) ?> · <?= h((string)$v['city']) ?></p>
             </div>
             <div class="venue-profile-actions">
+                <a class="venue-button venue-button-outline" href="tel:+919785005549">Call Wedding Za · 9785005549</a>
                 <button class="venue-button venue-button-outline heart-btn-static" type="button" data-shortlist="<?= h((string)$v['id']) ?>" aria-label="Save <?= h((string)$v['name']) ?>" aria-pressed="false">♡ Save to shortlist</button>
                 <button class="venue-compare" type="button" data-compare-venue="<?= h((string)$v['id']) ?>" data-compare-name="<?= h((string)$v['name']) ?>" aria-label="Compare <?= h((string)$v['name']) ?>" aria-pressed="false">Compare <span aria-hidden="true">+</span>
                 </button>
@@ -273,6 +274,7 @@ $venueMapQuery = $venueAddress !== ''
             <span class="venue-kicker">Let’s make a plan</span>
             <h2 id="venueEnquiryTitle"><?= wz_money_number((string)$v['price']) > 0 ? h((string)$v['price']) : 'Your celebration,<br><em>your quote.</em>' ?></h2>
             <p>Ask about pricing, spaces and availability for your date.</p>
+            <a class="venue-button venue-button-outline" href="tel:+919785005549">Call Wedding Za · 9785005549</a>
             <form class="venue-enquiry-form" data-async action="api/lead.php" method="post">
                 <input type="hidden" name="type" value="vendor-enquiry">
                 <input type="hidden" name="vendor" value="<?= h((string)$v['name']) ?>">

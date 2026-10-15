@@ -56,6 +56,9 @@ jobs:
       - name: Check venue installer safety
         run: php scripts/qa-venue-update.php
 
+      - name: Check current venue collection and installer
+        run: php scripts/qa-venue-collection.php
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -67,6 +70,7 @@ jobs:
           node --check assets/js/vision.js
           node --check assets/js/home-motion.js
           node --check assets/js/venues.js
+          node --check assets/js/venue-collection.js
           node --check sw.js
 
       - name: Validate JSON
