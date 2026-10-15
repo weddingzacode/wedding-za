@@ -27,6 +27,8 @@ if (!$pdo) {
 
 $email = 'venue-qa-' . bin2hex(random_bytes(8)) . '@example.com';
 $venueNames = ['Hotel Rudra Vilas', 'The Gopal Bagh & Resort'];
+$additions = json_decode(file_get_contents(dirname(__DIR__) . '/assets/data/venue-collection.json'), true, 512, JSON_THROW_ON_ERROR);
+$venueNames = array_merge($venueNames, array_column($additions, 'name'));
 
 try {
     foreach ($venueNames as $venueName) {

@@ -1,0 +1,240 @@
+[
+  {
+    "id": "urban-suites-blusalzz-jaipur",
+    "name": "Urban Suites Blusalzz",
+    "city": "Jaipur",
+    "locality": "Jagatpura, near Akshapatra Temple",
+    "venue_type": "Hotel & lawns",
+    "rooms": 350,
+    "capacity_max": 1500,
+    "capacity_label": "Up to 1,500",
+    "starting_price": null,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "A stay for the whole celebration",
+    "summary": "Three outdoor lawns, an indoor banquet and 350 rooms for celebrations that bring everyone together.",
+    "about": "Urban Suites Blusalzz is a wedding venue in Jagatpura, Jaipur, near Akshapatra Temple. With spacious event venues, elegant accommodation and versatile outdoor lawns, it is suited to weddings, pre-wedding functions and grand receptions. From Haldi and Mehendi to cocktail parties and multi-day destination weddings, its event spaces and on-site accommodation offer a versatile setting for families and guests.",
+    "spaces": [
+      {"name": "Indoor Banquet Hall", "capacity": "Enquire for capacity", "description": "Indoor celebrations, wedding ceremonies, engagements, family gatherings and private occasions."},
+      {"name": "Garden Lawn 1", "capacity": "Up to 250 guests", "description": "Haldi, Mehendi, intimate weddings and pre-wedding celebrations."},
+      {"name": "Garden Lawn 2", "capacity": "Up to 250 guests", "description": "Cocktail parties, dinner arrangements and evening celebrations."},
+      {"name": "Garden Lawn 3", "capacity": "Up to 1,500 guests", "description": "Grand wedding receptions, large gatherings and lavish celebrations."}
+    ],
+    "amenities": ["350 rooms & suites", "Outdoor swimming pool", "Dedicated plunge area", "Three outdoor lawns", "Indoor banquet"],
+    "events": ["Wedding", "Engagement", "Haldi", "Mehendi", "Cocktail", "Reception", "Private Party"],
+    "sections": [
+      {"title": "Rooms & accommodation", "text": "350 well-appointed rooms and suites accommodate wedding guests, families and attendees. An outdoor swimming pool with a dedicated plunge area adds to the stay."},
+      {"title": "Location & connectivity", "text": "Jagatpura, near Akshapatra Temple, Jaipur, Rajasthan. Jaipur International Airport is approximately 20 minutes away by road, depending on traffic."},
+      {"title": "Why choose this venue?", "text": "Multiple lawns suit different functions, while the indoor banquet and on-site rooms support both intimate events and multi-day celebrations."}
+    ]
+  },
+  {
+    "id": "barsana-hotel-resorts-jaipur",
+    "name": "Barsana Hotel & Resorts",
+    "city": "Jaipur",
+    "locality": "Mansarovar Extension, opposite Hyatt Regency Jaipur",
+    "venue_type": "Hotel & garden",
+    "rooms": 80,
+    "capacity_max": 1000,
+    "capacity_label": "Up to 1,000",
+    "starting_price": null,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "Stay, dine & celebrate",
+    "summary": "Two banquet halls, a garden for 1,000 guests and pure vegetarian dining, with 80 rooms on site.",
+    "about": "Barsana Hotel & Resorts, Jaipur brings comfortable accommodation, elegant celebrations and welcoming hospitality together in Mansarovar Extension, opposite Hyatt Regency Jaipur. With 80 well-appointed rooms, two banquet halls and a spacious garden, the property is suited to family stays, business travel, weddings, social gatherings and corporate events.",
+    "spaces": [
+      {"name": "Gokul Banquet Hall", "capacity": "Approximately 200 guests", "description": "Intimate weddings, engagements, birthdays, family functions and corporate events."},
+      {"name": "Vrindavan Banquet Hall", "capacity": "Approximately 400 guests", "description": "Larger wedding functions, receptions and social gatherings in an indoor setting."},
+      {"name": "Wedding Garden", "capacity": "Up to 1,000 guests", "description": "Grand weddings, receptions and large outdoor celebrations."}
+    ],
+    "amenities": ["80 rooms", "Pure vegetarian dining", "Murli Restaurant", "Two banquet halls", "Outdoor garden"],
+    "events": ["Wedding", "Reception", "Engagement", "Birthday", "Anniversary", "Corporate", "Private Party"],
+    "sections": [
+      {"title": "Rooms & suites", "text": "Choose from Deluxe Rooms, Superior Rooms, Signature Twin Rooms, Executive Suites and Royal Suites, subject to current availability. Accommodation suits families, business travellers and wedding guests."},
+      {"title": "Murli Restaurant", "text": "Pure vegetarian, multi-cuisine dining in a welcoming setting for family meals, group dining and special occasions."},
+      {"title": "Location", "text": "Mansarovar Extension, opposite Hyatt Regency Jaipur. A convenient setting for stays, wedding celebrations, family functions and corporate gatherings."},
+      {"title": "Plan your celebration", "text": "Enquire with Weddingza about room bookings, wedding packages, banquet availability and customised event arrangements."}
+    ]
+  },
+  {
+    "id": "golden-eagle-wizowll-jaipur",
+    "name": "Golden Eagle by Wizowll Group of Hotels & Banquets",
+    "city": "Jaipur",
+    "locality": "Jaipur–Ajmer Road, near Hotel Highway King",
+    "venue_type": "Hotel & banquets",
+    "rooms": 33,
+    "capacity_max": 500,
+    "capacity_label": "Up to 500",
+    "starting_price": null,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "An intimate celebration, beautifully hosted",
+    "summary": "Two banquet halls, an outdoor garden and 33 guest rooms on Jaipur–Ajmer Road.",
+    "about": "Golden Eagle by Wizowll Group of Hotels & Banquets offers a setting for weddings, grand receptions, engagements and pre-wedding celebrations. Located on Jaipur–Ajmer Road near Hotel Highway King, it combines indoor banquet halls, an outdoor garden, comfortable accommodation and a swimming pool for celebrations and guest stays.",
+    "spaces": [
+      {"name": "Banquet Hall 1", "capacity": "150 guests", "description": "Intimate ceremonies, engagements, anniversaries and family celebrations."},
+      {"name": "Banquet Hall 2", "capacity": "250 guests", "description": "Indoor wedding ceremonies, receptions and pre-wedding functions."},
+      {"name": "Wedding Garden", "capacity": "Up to 500 guests", "description": "Outdoor weddings, lawn ceremonies and grand receptions."}
+    ],
+    "amenities": ["33 guest rooms", "Swimming pool", "Two banquet halls", "Wedding garden"],
+    "events": ["Wedding", "Reception", "Engagement", "Anniversary", "Haldi", "Mehendi", "Private Party"],
+    "sections": [
+      {"title": "Guest accommodation", "text": "33 spacious guest rooms provide accommodation for relatives, family members and wedding guests. A swimming pool adds to the stay experience."},
+      {"title": "Location & connectivity", "text": "Near Hotel Highway King on Jaipur–Ajmer Road. Stated travel times are approximately 10 minutes from Jaipur Railway Station, 20 minutes from Jaipur International Airport and 10 minutes from Mansarovar Metro Station, depending on traffic."},
+      {"title": "Celebrate at Golden Eagle", "text": "Plan a traditional Indian wedding, destination-style celebration, reception or pre-wedding function. Contact Weddingza for dates, availability and packages."}
+    ]
+  },
+  {
+    "id": "hari-van-jaipur",
+    "name": "Hari Van – A Royal Wedding Destination",
+    "city": "Jaipur",
+    "locality": "Kesar Chouraha, Rampura Road, Mansarovar",
+    "venue_type": "Banquet & lawn",
+    "rooms": 40,
+    "capacity_max": 1500,
+    "capacity_label": "Up to 1,500",
+    "starting_price": 1150000,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "Make room for a royal celebration",
+    "summary": "A grand marriage lawn, an indoor banquet and 40 guest rooms for multi-day family celebrations.",
+    "about": "Hari Van – A Royal Wedding Destination is an elegant wedding venue in Mansarovar, Jaipur. Its spacious event areas, guest accommodation and personalised wedding arrangements create a setting for grand celebrations, traditional rituals and memorable family gatherings.",
+    "spaces": [
+      {"name": "Banquet Hall", "capacity": "Approximately 250 guests with sofa seating", "description": "Indoor weddings, engagements, receptions and pre-wedding functions."},
+      {"name": "Grand Marriage Lawn", "capacity": "Up to 1,500 guests; seating up to 1,000", "description": "Grand weddings, receptions, Sangeet nights and baraat celebrations."}
+    ],
+    "amenities": ["40 guest rooms", "Grand marriage lawn", "Indoor banquet", "Multi-day stays"],
+    "events": ["Wedding", "Reception", "Haldi", "Mehendi", "Sangeet", "Cocktail", "Engagement", "Anniversary", "Private Party"],
+    "sections": [
+      {"title": "Accommodation", "text": "40 guest rooms support destination weddings, multi-day functions and comfortable stays for out-of-town families and guests."},
+      {"title": "Events & celebrations", "text": "Host weddings, receptions, Haldi, Mehendi, Sangeet, cocktail functions, engagements, anniversaries and family gatherings. The venue also suits traditional rituals, baraat and havan ceremonies."},
+      {"title": "Location", "text": "Kesar Chouraha, Rampura Road, Mansarovar, Jaipur, Rajasthan 302020. The location offers access to Jaipur International Airport, railway stations and city attractions."},
+      {"title": "Package price", "text": "Quoted price: ₹11.50 lakh for one function. Contact Weddingza to confirm your date, package inclusions and customised arrangements."}
+    ]
+  },
+  {
+    "id": "caelum-atharva-palace-jaipur",
+    "name": "Caelum Atharva Palace",
+    "city": "Jaipur",
+    "locality": "Accessible via Ajmer Road & Sirsi Road",
+    "venue_type": "Palace & resort",
+    "rooms": 70,
+    "capacity_max": 2000,
+    "capacity_label": "2,000+",
+    "starting_price": null,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "Rajasthani royalty meets lush greenery",
+    "summary": "Three lawns, three indoor venues, a Haveli rooftop and 70 rooms for a destination celebration.",
+    "about": "Caelum Atharva Palace blends royal Rajasthani heritage with lush Kerala-inspired greenery. Surrounded by peaceful natural landscapes, it offers a setting for grand weddings, intimate gatherings, two-day ceremonies, receptions and corporate events. Wedding lawns, banquet halls, a Haveli rooftop and on-site accommodation allow each function to have its own setting.",
+    "spaces": [
+      {"name": "Wedding Lawn 1", "capacity": "1,000+ guests", "description": "Large outdoor wedding celebrations."},
+      {"name": "Wedding Lawn 2", "capacity": "2,000+ guests", "description": "Grand weddings and large receptions."},
+      {"name": "Wedding Lawn 3", "capacity": "350+ guests", "description": "Pre-wedding functions and intimate outdoor gatherings."},
+      {"name": "Indoor Venue 1", "capacity": "250+ guests", "description": "Indoor ceremonies and celebrations."},
+      {"name": "Indoor Venue 2", "capacity": "125+ guests", "description": "Smaller functions and gatherings."},
+      {"name": "Indoor Venue 3", "capacity": "50–60 guests", "description": "Intimate private celebrations."},
+      {"name": "Haveli Rooftop", "capacity": "Approximately 350–400 guests", "description": "Rooftop gatherings and wedding functions."},
+      {"name": "Restaurant", "capacity": "150–200 guests", "description": "Dining and group meals."},
+      {"name": "Bar Area", "capacity": "25–30 guests", "description": "An intimate social space."}
+    ],
+    "amenities": ["70 rooms + 20 nearby on request", "Swimming pool & rain dance", "200+ parking spaces", "EV charging", "Wi-Fi", "Complimentary pre-wedding shoot", "Coffee & lawn area", "Hospitality support"],
+    "events": ["Wedding", "Engagement", "Mehendi", "Haldi", "Sangeet", "Reception", "Birthday", "Anniversary", "Corporate", "Private Party"],
+    "sections": [
+      {"title": "Stay & hospitality", "text": "70 rooms, with 20 additional nearby rooms available if required. Spacious rooms, Wi-Fi, a coffee and lawn area, dining facilities and hospitality support serve hosts and guests throughout the celebration."},
+      {"title": "Poolside & photography", "text": "Swimming pool and rain dance facilities suit wedding festivities. A complimentary pre-wedding shoot and multiple picturesque locations provide photography opportunities."},
+      {"title": "Parking & sound", "text": "200+ parking spaces and EV charging facilities. Flexible sound arrangements are offered; confirm event-specific timing and permissions with the venue."},
+      {"title": "Location & routes", "text": "Accessible via Ajmer Road through Bad Ke Balaji, approximately 5–6 km, or via Sirsi Road, approximately 1–2 km. Contact Weddingza for precise directions and arrangements."},
+      {"title": "A destination for many occasions", "text": "Suitable for destination weddings, two-day celebrations, ring ceremonies, pre-wedding functions, family events, birthdays, anniversaries, conferences and corporate team gatherings."}
+    ]
+  },
+  {
+    "id": "jisaa-eco-resort-jaipur",
+    "name": "JISAA Eco Resort",
+    "city": "Jaipur",
+    "locality": "Bad Ke Balaji, Bichpari, Nimeda, near Ajmer Road",
+    "venue_type": "Eco resort",
+    "rooms": 50,
+    "capacity_max": 1500,
+    "capacity_label": "Up to 1,500",
+    "starting_price": 1150000,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "A celebration closer to nature",
+    "summary": "Wedding gardens, private villas and 50 rooms in peaceful surroundings near Ajmer Road.",
+    "about": "JISAA Eco Resort is a nature-inspired wedding destination near Ajmer Road at Bad Ke Balaji, Bichpari, Nimeda, Jaipur. Its spacious natural landscape offers a peaceful escape for destination weddings, pre-wedding functions, family gatherings and special occasions, with accommodation, recreation and wedding gardens in one setting.",
+    "spaces": [
+      {"name": "Garden Space 1", "capacity": "Approximately 150 guests", "description": "Intimate wedding ceremonies and family gatherings."},
+      {"name": "Garden Space 2", "capacity": "Approximately 200 guests", "description": "Pre-wedding functions and outdoor celebrations."},
+      {"name": "Main Wedding Garden", "capacity": "Up to 1,500 guests", "description": "Grand weddings and receptions. Confirm individual space layouts with the venue."}
+    ],
+    "amenities": ["50 rooms", "Private villas", "Swimming pool", "Gym & fitness", "Indoor & outdoor games", "Wi-Fi", "Restaurant", "Natural surroundings"],
+    "events": ["Wedding", "Reception", "Engagement", "Haldi", "Mehendi", "Private Party"],
+    "sections": [
+      {"title": "Accommodation & recreation", "text": "50 spacious rooms and private villa accommodation, with a swimming pool, gym, indoor and outdoor games, Wi-Fi, restaurant and food facilities."},
+      {"title": "A setting for special occasions", "text": "Explore the resort for destination weddings, ceremonies, receptions, pre- and post-wedding functions, engagements, Haldi, Mehendi, family gatherings and group stays."},
+      {"title": "Address", "text": "JISAA Eco Resort, near Ajmer Road, Bad Ke Balaji, Bichpari, Nimeda, Rajasthan 303007, Jaipur, India."},
+      {"title": "Package price", "text": "Quoted price: ₹11.50 lakh per function. Enquire with Weddingza for availability, package inclusions and arrangements."}
+    ]
+  },
+  {
+    "id": "crown-heaven-hotel-resort-jaipur",
+    "name": "Crown Heaven Hotel & Resort",
+    "city": "Jaipur",
+    "locality": "Harbanspura Road, near Bhakrota, Jaipur–Ajmer Highway",
+    "venue_type": "Hotel & resort",
+    "rooms": 95,
+    "capacity_max": 1500,
+    "capacity_label": "Up to 1,500",
+    "starting_price": null,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "A generous setting for your guest list",
+    "summary": "95 rooms, a 450-guest banquet, two spacious gardens and an exclusive VIP lounge.",
+    "about": "Crown Heaven Hotel & Resort Jaipur offers comfortable stays and versatile spaces for weddings, corporate events and special celebrations. Located on Harbanspura Road near Bhakrota on the Jaipur–Ajmer Highway, the property combines 95 well-appointed rooms, an indoor banquet, two gardens and an exclusive VIP lounge.",
+    "spaces": [
+      {"name": "Banquet Hall", "capacity": "Up to 450 guests", "description": "Indoor wedding functions, receptions, corporate events and family celebrations."},
+      {"name": "Garden 1", "capacity": "Up to 600 guests", "description": "Outdoor celebrations and social gatherings."},
+      {"name": "Garden 2", "capacity": "Up to 1,500 guests", "description": "Grand weddings, receptions and large-scale celebrations."},
+      {"name": "VIP Lounge", "capacity": "Enquire for capacity", "description": "An exclusive lounge for relaxation and premium hospitality."}
+    ],
+    "amenities": ["95 rooms", "Two gardens", "Indoor banquet", "VIP lounge", "Group accommodation"],
+    "events": ["Wedding", "Reception", "Engagement", "Birthday", "Corporate", "Private Party"],
+    "sections": [
+      {"title": "Stay & celebrate", "text": "Accommodation and indoor and outdoor event spaces serve families, wedding guests, business travellers and organisers planning a destination wedding, reception, corporate function or hotel stay."},
+      {"title": "Location", "text": "Harbanspura Road, near Bhakrota, Jaipur–Ajmer Highway, Jaipur, Rajasthan 302026."},
+      {"title": "Plan your event", "text": "Enquire with Weddingza about availability, room bookings, wedding packages and arrangements for pre-wedding functions, birthdays, corporate events and family gatherings."}
+    ]
+  },
+  {
+    "id": "shubhagman-banquets-resort-jaipur",
+    "name": "Shubhagman Banquets & Resort",
+    "city": "Jaipur",
+    "locality": "Patrakar Colony, Mansarovar, near New Sanganer Road & B-2 Bypass",
+    "venue_type": "Banquets & resort",
+    "rooms": 60,
+    "capacity_max": 600,
+    "capacity_label": "Up to 600",
+    "starting_price": null,
+    "price_unit": "function",
+    "image": "",
+    "eyebrow": "Your functions, your personal touch",
+    "summary": "Indoor, outdoor and poolside spaces with 60 rooms and flexible catering and décor options.",
+    "about": "Shubhagman Banquets & Resort in Mansarovar, Jaipur offers a spacious setting for weddings, destination celebrations and pre-wedding functions. With 60 rooms, indoor and outdoor event spaces, banquet facilities, lawns and a poolside setting, it combines celebrations and guest accommodation for couples and families. The venue accommodates up to 600 guests and supports both intimate gatherings and larger functions.",
+    "spaces": [
+      {"name": "Indoor Banquet Spaces", "capacity": "Confirm individual space capacity", "description": "Engagements, wedding ceremonies and indoor celebrations."},
+      {"name": "Outdoor Lawns", "capacity": "Venue accommodates up to 600 guests", "description": "Weddings, receptions, Mehendi, Haldi and Sangeet."},
+      {"name": "Poolside Setting", "capacity": "Confirm layout & capacity", "description": "Pre-wedding celebrations and intimate gatherings."}
+    ],
+    "amenities": ["60 rooms", "Poolside events", "Indoor & outdoor spaces", "Ample parking", "Flexible catering"],
+    "events": ["Wedding", "Engagement", "Mehendi", "Haldi", "Sangeet", "Reception", "Private Party"],
+    "policies": {"Catering": "In-house and outside catering available", "Décor": "Outside decorators permitted", "Music": "Outside DJs permitted"},
+    "sections": [
+      {"title": "Accommodation", "text": "60 rooms allow families and wedding guests to stay close to the celebrations, making the property suited to multi-day wedding events."},
+      {"title": "Catering, décor & music", "text": "In-house and outside catering options are available. Outside decorators and DJs are permitted, allowing families to personalise their event setup."},
+      {"title": "Location & parking", "text": "Patrakar Colony, Mansarovar, near New Sanganer Road and B-2 Bypass, Jaipur. Access from different parts of the city and ample parking add convenience for guests."},
+      {"title": "Enquire with Weddingza", "text": "Contact Weddingza for venue availability, wedding packages, room rates and pricing at Shubhagman Banquets & Resort."}
+    ]
+  }
+]

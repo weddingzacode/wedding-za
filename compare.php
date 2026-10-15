@@ -3,6 +3,7 @@
 require __DIR__ . '/includes/bootstrap.php';
 require __DIR__ . '/includes/components.php';
 require __DIR__ . '/includes/vendors.php';
+require_once __DIR__ . '/includes/venue-collection.php';
 
 $pageTitle = 'Compare Wedding Venues';
 $pageDescription = 'Compare wedding venues side by side by price, rating, capacity, rooms, parking and venue type.';
@@ -28,7 +29,7 @@ $ids = array_slice(
 
 $venues = [];
 
-foreach (wz_public_vendors() as $venue) {
+foreach (wz_collection_venues(wz_public_vendors()) as $venue) {
     $isVenue =
         ($venue['business_type'] ?? '') === 'venue'
         || ($venue['category'] ?? '') === 'Venues';
