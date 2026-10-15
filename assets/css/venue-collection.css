@@ -251,3 +251,19 @@
 .vc-photo-thumbs button[aria-current="true"] {outline:3px solid #612c3d;outline-offset:-2px}
 @media (hover:none),(pointer:coarse) {.vc-call-number {opacity:1;transform:none}.vc-call-label {opacity:0}}
 @media (max-width:600px) {.vc-photo-dialog{padding:12px}.vc-photo-stage {gap:5px;padding:4px}.vc-photo-stage img {height:45dvh}}
+
+
+/* Image phone CTA: hover/focus on desktop, always visible on touch. */
+.vc-card-media-wrap {position:relative;isolation:isolate;overflow:hidden;background:#e9ded2}
+.vc-card-media-wrap .vc-card-media {width:100%}
+.vc-card-media-wrap .vc-media-caption {bottom:68px}
+.vc-page .vc-card-hover-call {position:absolute;z-index:3;left:17px;bottom:17px;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;max-width:calc(100% - 90px);padding:10px 16px;color:#fff;background:#612c3d;border:1px solid #ffffff5c;border-radius:7px;box-shadow:0 10px 28px #24151a50;font-size:12px;font-weight:800;line-height:1.2;text-decoration:none;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .24s ease,transform .24s ease,background .2s ease}
+.vc-card-hover-call svg {width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;flex:none}
+.vc-card:hover .vc-card-hover-call,.vc-card-media-wrap:focus-within .vc-card-hover-call,.vc-card-hover-call:focus-visible {opacity:1;transform:translateY(0);pointer-events:auto}
+.vc-page .vc-card-hover-call:hover {background:#462231}
+.vc-page .vc-card-hover-call:focus-visible {outline:3px solid #e0b172;outline-offset:3px}
+.vc-card-actions {grid-template-columns:1fr}
+.vc-page .vc-card-actions .vc-btn {width:100%}
+@media (hover:none),(pointer:coarse) {.vc-page .vc-card-hover-call {opacity:1;transform:none;pointer-events:auto;min-height:44px}}
+@media (max-width:420px) {.vc-page .vc-card-hover-call {left:12px;bottom:12px;padding:9px 12px;font-size:11px}.vc-card-media-wrap .vc-media-caption {bottom:65px}}
+@media (prefers-reduced-motion:reduce) {.vc-page .vc-card-hover-call {transition:none}}
