@@ -65,7 +65,7 @@ foreach ($vcAllVenues as $venue) {
 }
 require __DIR__ . '/includes/header.php';
 ?>
-<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261012photos">
+<link rel="stylesheet" href="assets/css/venue-collection.css?v=20261015hoverphotos">
 <main class="vc-page">
     <section class="vc-hero">
         <div class="vc-shell vc-hero-grid">
@@ -138,12 +138,15 @@ require __DIR__ . '/includes/header.php';
                 $image = $venue['image'] ?? 'assets/images/image-fallback.svg';
                 ?>
                 <article class="vc-card" data-vc-reveal>
+                    <div class="vc-card-media-wrap">
                     <a class="vc-card-media <?= !empty($venue['illustrated']) ? 'vc-illustrated' : '' ?>" href="<?= h($url) ?>" aria-label="Explore <?= h($venue['name']) ?>">
                         <img src="<?= h($image) ?>" alt="<?= h(!empty($venue['illustrated']) ? 'Illustrated cover for ' . $venue['name'] : $venue['name']) ?>" width="800" height="540" loading="lazy" decoding="async">
                         <span class="vc-media-type"><?= h($venue['venue_type'] ?? 'Celebration venue') ?></span>
                         <?php if (!empty($venue['illustrated'])): ?><span class="vc-media-caption">ILLUSTRATED VENUE COVER</span><?php endif; ?>
                         <span class="vc-media-open" aria-hidden="true">↗</span>
                     </a>
+                        <a class="vc-card-hover-call" href="tel:+919785005549" aria-label="Call Weddingza on 9785005549 about <?= h($venue['name']) ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 5 4c-2 5 4 13 10 15l4-3-3-4-3 2-4-4 2-3Z"/></svg><span>Call 9785005549</span></a>
+                    </div>
                     <?php wz_venue_gallery($venue); ?>
                     <div class="vc-card-body">
                         <p class="vc-location"><span aria-hidden="true">⌖</span> <?= h($venue['locality'] ?? '') ?> · <?= h($venue['city'] ?? '') ?></p>
@@ -156,7 +159,7 @@ require __DIR__ . '/includes/header.php';
                         <?php endif; ?>
                         <?php if ((int)($venue['reviews'] ?? 0) > 0): ?><p class="vc-small">★ <?= h((string)($venue['rating'] ?? '')) ?> · <?= (int)$venue['reviews'] ?> reviews</p><?php endif; ?>
                         <div class="vc-card-bottom"><div><small><?= !empty($venue['starting_price']) ? 'QUOTED PACKAGE' : 'PLAN YOUR CELEBRATION' ?></small><strong><?= h($venue['price'] ?? 'Request pricing') ?></strong></div><a class="vc-link" href="<?= h($url) ?>">View venue ↗</a></div>
-                        <div class="vc-card-actions"><a class="vc-btn vc-call" href="tel:+919785005549" aria-label="Call Weddingza on 9785005549 about <?= h($venue['name']) ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 5 4c-2 5 4 13 10 15l4-3-3-4-3 2-4-4 2-3Z"/></svg><span class="vc-call-label">Call Weddingza</span><span class="vc-call-number" aria-hidden="true">9785005549</span></a><a class="vc-btn vc-btn-outline" href="<?= h($url) ?>#enquire">Enquire <span aria-hidden="true">↗</span></a></div>
+                        <div class="vc-card-actions"><a class="vc-btn vc-btn-outline" href="<?= h($url) ?>#enquire">Enquire <span aria-hidden="true">↗</span></a></div>
                     </div>
                 </article>
             <?php endforeach; ?>
@@ -166,5 +169,5 @@ require __DIR__ . '/includes/header.php';
     </section>
 <?php wz_venue_gallery_dialog(); ?>
 </main>
-<script defer src="assets/js/venue-collection.js?v=20261012photos"></script>
+<script defer src="assets/js/venue-collection.js?v=20261015hoverphotos"></script>
 <?php require __DIR__ . '/includes/footer.php'; ?>
